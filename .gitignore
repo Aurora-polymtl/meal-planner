@@ -1,0 +1,68 @@
+# =========================
+# ANGULAR OUTPUT
+# =========================
+/dist/
+/tmp/
+/out-tsc/
+/bazel-out/
+/.angular/cache/
+
+# =========================
+# NODE
+# =========================
+/node_modules/
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# =========================
+# ENV FILES (for Firebase maybe later)
+# =========================
+.env
+.env.*
+
+# =========================
+# ANGULAR / PWA
+# =========================
+/ngsw-worker.js
+/ngsw.json
+/worker-basic.min.js
+
+# =========================
+# COVERAGE / TESTS
+# =========================
+/coverage/
+/testem.log
+
+# =========================
+# IDEs
+# =========================
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# =========================
+# SYSTEM FILES
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# ANGULAR LOCAL METADATA
+# =========================
+.angular/
+
+# =========================
+# OPTIONAL (for Cypress / e2e later)
+# =========================
+/cypress/screenshots/
+/cypress/videos/
+
+# =========================
+# OPTIONAL BACKUPS
+# =========================
+*.bak
+*.swp

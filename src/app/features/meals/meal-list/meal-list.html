@@ -1,0 +1,35 @@
+<h1>Mes repas</h1>
+
+<!-- FORMULAIRE -->
+<div style="margin-bottom: 20px;">
+  <input
+    type="text"
+    [(ngModel)]="name"
+    placeholder="Nom du repas"
+  />
+
+  <input
+    type="text"
+    [(ngModel)]="category"
+    placeholder="Catégorie"
+  />
+
+  <button (click)="addMeal()">
+    Ajouter
+  </button>
+</div>
+
+<hr />
+
+<!-- LISTE DES REPAS -->
+@for (meal of meals; track meal.id) {
+  <div style="margin-bottom: 10px;">
+    <p>
+      <strong>{{ meal.name }}</strong> - {{ meal.category }}
+    </p>
+
+    <button (click)="deleteMeal(meal.id)">
+      Supprimer
+    </button>
+  </div>
+}
