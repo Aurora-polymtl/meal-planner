@@ -37,3 +37,65 @@ body {
   height: 100%;
 }
 /* You can add global styles to this file, and also import other style files */
+
+/* =========================
+   GLOBAL APP LAYOUT
+========================= */
+
+.app-container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+/* =========================
+   INPUTS GLOBALS
+========================= */
+
+input {
+  width: 100%;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+
+  border-radius: 10px;
+  border: 1px solid var(--mat-sys-outline-variant);
+  background: var(--mat-sys-surface);
+
+  color: var(--mat-sys-on-surface);
+  font: var(--mat-sys-body-medium);
+}
+
+/* =========================
+   BUTTONS GLOBALS
+========================= */
+
+button {
+  border: none;
+  border-radius: 10px;
+  padding: 10px 12px;
+  cursor: pointer;
+
+  background: var(--mat-sys-primary);
+  color: var(--mat-sys-on-primary);
+
+  font: var(--mat-sys-label-large);
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+/* =========================
+   MOBILE RESPONSIVE
+========================= */
+
+@media (max-width: 600px) {
+  .app-container {
+    padding: 12px;
+  }
+
+  button {
+    width: 100%;
+    margin-bottom: 8px;
+  }
+}

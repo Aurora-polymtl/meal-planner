@@ -1,50 +1,46 @@
-<h1>Mes repas</h1>
+<div class="app-container">
+  <h1>Mes repas</h1>
 
-<!-- FORMULAIRE -->
-<div style="margin-bottom: 20px;">
+  <!-- BOUTON OUVRIR FORM -->
+  @if (!showForm) {
+    <button (click)="openForm()">Ajouter un plat</button>
+  }
 
-  <!-- NOM -->
-  <input
-    type="text"
-    [(ngModel)]="name"
-    placeholder="Nom du repas"
-    name="name"
-  />
-  <div style="color: red; font-size: 12px;">
-    {{ errors.name }}
-  </div>
+  <hr />
 
-  <br />
+  <!-- FORMULAIRE -->
+  @if (showForm) {
+    <div style="margin-bottom: 20px">
+      <input type="text" [(ngModel)]="name" placeholder="Nom du repas" name="name" />
+      <div class="error">
+        {{ errors.name }}
+      </div>
 
-  <!-- CATEGORIE -->
-  <input
-    type="text"
-    [(ngModel)]="category"
-    placeholder="Catégorie"
-    name="category"
-  />
-  <div style="color: red; font-size: 12px;">
-    {{ errors.category }}
-  </div>
+      <input type="text" [(ngModel)]="category" placeholder="Catégorie" name="category" />
+      <div class="error">
+        {{ errors.category }}
+      </div>
 
-  <br />
+      <div class="form-actions">
+        <button (click)="addMeal()">Ajouter</button>
 
-  <button (click)="addMeal()">
-    Ajouter
-  </button>
+        <button (click)="closeForm()">Fermer</button>
+      </div>
+    </div>
+
+    <hr />
+  }
+
+  <!-- LISTE -->
+  @for (meal of meals; track meal.id) {
+    <div class="meal-card">
+      <div>
+        <strong>{{ meal.name }}</strong
+        ><br />
+        <small>{{ meal.category }}</small>
+      </div>
+
+      <button (click)="deleteMeal(meal.id)">Supprimer</button>
+    </div>
+  }
 </div>
-
-<hr />
-
-<!-- LISTE -->
-@for (meal of meals; track meal.id) {
-  <div style="margin-bottom: 10px;">
-    <p>
-      <strong>{{ meal.name }}</strong> - {{ meal.category }}
-    </p>
-
-    <button (click)="deleteMeal(meal.id)">
-      Supprimer
-    </button>
-  </div>
-}

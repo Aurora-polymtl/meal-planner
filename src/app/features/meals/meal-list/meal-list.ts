@@ -1,53 +1,58 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { MealService } from '../meal.service';
 import { Meal } from '../../../models/meal';
 import { FormsModule } from '@angular/forms';
-import { ChangeDetectorRef } from '@angular/core';
 import { MealValidationService, MealErrors } from '../meal-validation.service';
 
 @Component({
   selector: 'app-meal-list',
   standalone: true,
   templateUrl: './meal-list.html',
-  imports: [FormsModule],
+  styleUrl: './meal-list.scss',
+  imports: [FormsModule]
 })
 export class MealListComponent implements OnInit {
+
   meals: Meal[] = [];
 
   name: string = '';
   category: string = '';
+
+  showForm: boolean = false;
 
   errors: MealErrors = {};
 
   constructor(
     private mealService: MealService,
     private validationService: MealValidationService,
-    private cdr: ChangeDetectorRef,
+    private cdr: ChangeDetectorRef
   ) {}
 
   async ngOnInit() {
     await this.loadMeals();
   }
 
-  async loadMeals() {
-    const data = await this.mealService.getAll();
-    this.meals = data;
+  openForm() {
+    this.showForm = true;
+  }
 
+  closeForm() {
+    this.showForm = false;
+  }
+
+  async loadMeals() {
+    this.meals = await this.mealService.getAll();
     this.cdr.detectChanges();
   }
 
   async addMeal() {
-    this.errors = {};
-
     this.errors = this.validationService.validateMeal(
       this.name,
       this.category,
       this.meals
     );
 
-    if (this.errors.name || this.errors.category) {
-      return;
-    }
+    if (this.errors.name || this.errors.category) return;
 
     const newMeal: Meal = {
       id: crypto.randomUUID(),
