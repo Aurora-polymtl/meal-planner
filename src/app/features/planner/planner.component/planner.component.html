@@ -1,0 +1,37 @@
+<div class="planner-container">
+
+  <h2>Planificateur de menu hebdomadaire</h2>
+
+  <!-- CONFIG -->
+  <div class="controls">
+
+    <label>Jour de début</label>
+    <select [(ngModel)]="startDay">
+      @for (day of daysOfWeek; track day) {
+        <option [value]="day">{{ day }}</option>
+      }
+    </select>
+
+    <label>Nombre de jours (1 à 7)</label>
+    <input
+      type="number"
+      min="1"
+      max="7"
+      [(ngModel)]="numberOfDays"
+    />
+
+  </div>
+
+  <!-- CALENDRIER -->
+  <div class="calendar">
+
+    @for (day of visibleDays; track day) {
+      <div class="day-card">
+        <h3>{{ day }}</h3>
+        <p>Aucun repas planifié</p>
+      </div>
+    }
+
+  </div>
+
+</div>

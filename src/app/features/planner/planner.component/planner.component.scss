@@ -1,0 +1,54 @@
+.planner-container {
+  padding: 16px;
+}
+
+/* =========================
+   CONTROLS
+========================= */
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+/* =========================
+   CALENDRIER
+========================= */
+.calendar {
+  display: flex;
+  gap: 10px;
+
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+
+  scroll-snap-type: x mandatory;
+
+  /* IMPORTANT: évite overflow global desktop */
+  max-width: 100%;
+}
+
+/* =========================
+   CARTE JOUR (DESKTOP DEFAULT)
+========================= */
+.day-card {
+  flex: 1;              /* 👈 clé principale */
+  min-width: 0;         /* 👈 évite overflow flex */
+  
+  background: var(--mat-sys-surface-container);
+  border-radius: 12px;
+  padding: 12px;
+
+  scroll-snap-align: start;
+
+  text-align: center;
+}
+
+/* =========================
+   MOBILE: SWIPE COMFORTABLE
+========================= */
+@media (max-width: 600px) {
+  .day-card {
+    flex: 0 0 80%;      /* swipe visible */
+  }
+}
