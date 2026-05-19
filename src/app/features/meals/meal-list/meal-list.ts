@@ -3,6 +3,7 @@ import { MealService } from '../meal.service';
 import { Meal } from '../../../models/meal';
 import { FormsModule } from '@angular/forms';
 import { ChangeDetectorRef } from '@angular/core';
+import { MealValidationService, MealErrors } from '../meal-validation.service';
 
 @Component({
   selector: 'app-meal-list',
@@ -16,8 +17,11 @@ export class MealListComponent implements OnInit {
   name: string = '';
   category: string = '';
 
+  errors: MealErrors = {};
+
   constructor(
     private mealService: MealService,
+    private validationService: MealValidationService,
     private cdr: ChangeDetectorRef,
   ) {}
 
@@ -33,12 +37,22 @@ export class MealListComponent implements OnInit {
   }
 
   async addMeal() {
-    if (!this.name || !this.category) return;
+    this.errors = {};
+
+    this.errors = this.validationService.validateMeal(
+      this.name,
+      this.category,
+      this.meals
+    );
+
+    if (this.errors.name || this.errors.category) {
+      return;
+    }
 
     const newMeal: Meal = {
       id: crypto.randomUUID(),
-      name: this.name,
-      category: this.category,
+      name: this.name.trim(),
+      category: this.category.trim()
     };
 
     await this.mealService.add(newMeal);
@@ -47,15 +61,10 @@ export class MealListComponent implements OnInit {
     this.category = '';
 
     await this.loadMeals();
-
-    this.cdr.detectChanges();
   }
 
   async deleteMeal(id: string) {
     await this.mealService.delete(id);
-
     await this.loadMeals();
-
-    this.cdr.detectChanges();
   }
 }

@@ -1,27 +1,42 @@
 <h1>Mes repas</h1>
 
-<form (ngSubmit)="addMeal()">
+<!-- FORMULAIRE -->
+<div style="margin-bottom: 20px;">
+
+  <!-- NOM -->
   <input
     type="text"
-    name="name"
     [(ngModel)]="name"
     placeholder="Nom du repas"
+    name="name"
   />
+  <div style="color: red; font-size: 12px;">
+    {{ errors.name }}
+  </div>
 
+  <br />
+
+  <!-- CATEGORIE -->
   <input
     type="text"
-    name="category"
     [(ngModel)]="category"
     placeholder="Catégorie"
+    name="category"
   />
+  <div style="color: red; font-size: 12px;">
+    {{ errors.category }}
+  </div>
 
-  <button type="submit">
+  <br />
+
+  <button (click)="addMeal()">
     Ajouter
   </button>
-</form>
+</div>
 
 <hr />
 
+<!-- LISTE -->
 @for (meal of meals; track meal.id) {
   <div style="margin-bottom: 10px;">
     <p>
