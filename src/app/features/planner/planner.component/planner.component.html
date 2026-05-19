@@ -1,37 +1,53 @@
 <div class="planner-container">
+  <!-- BOUTON GENERATOR -->
+  <button class="new-menu-btn" (click)="openGenerator()">Nouveau menu</button>
 
-  <h2>Planificateur de menu hebdomadaire</h2>
+  <!-- NAVIGATION + CALENDAR (HIDDEN WHEN GENERATOR OPEN) -->
+  @if (!showGenerator) {
+    <!-- NAVIGATION -->
+    <div class="nav">
+      <button (click)="previousWeek()">←</button>
 
-  <!-- CONFIG -->
-  <div class="controls">
+      <h3>Semaine du {{ currentWeekStart ? (currentWeekStart | date) : '' }}</h3>
 
-    <label>Jour de début</label>
-    <select [(ngModel)]="startDay">
-      @for (day of daysOfWeek; track day) {
-        <option [value]="day">{{ day }}</option>
+      <button (click)="nextWeek()">→</button>
+    </div>
+
+    <!-- CALENDAR -->
+    <div class="calendar">
+      @for (day of getWeekDays(currentWeekStart); track day.toISOString()) {
+        <div class="day-card">
+          <div class="day-name">
+            {{ day | date: 'EEEE' }}
+          </div>
+
+          <div class="date">
+            {{ day | date: 'dd/MM' }}
+          </div>
+
+          <div class="meals">
+            @for (meal of getMealsForDay(day); track meal) {
+              <p>{{ meal }}</p>
+            }
+          </div>
+        </div>
       }
-    </select>
+    </div>
+  }
 
-    <label>Nombre de jours (1 à 7)</label>
-    <input
-      type="number"
-      min="1"
-      max="7"
-      [(ngModel)]="numberOfDays"
-    />
+  <!-- GENERATOR (ONLY WHEN OPEN) -->
+  @if (showGenerator) {
+    <div class="generator">
+      <label>Date de départ</label>
+      <input type="date" [(ngModel)]="startDate" />
 
-  </div>
+      <label>Nombre de jours</label>
+      <input type="number" min="1" max="7" [(ngModel)]="numberOfDays" />
 
-  <!-- CALENDRIER -->
-  <div class="calendar">
-
-    @for (day of visibleDays; track day) {
-      <div class="day-card">
-        <h3>{{ day }}</h3>
-        <p>Aucun repas planifié</p>
+      <div class="generator-actions">
+        <button (click)="generatePlan()">Générer</button>
+        <button (click)="closeGenerator()">Annuler</button>
       </div>
-    }
-
-  </div>
-
+    </div>
+  }
 </div>

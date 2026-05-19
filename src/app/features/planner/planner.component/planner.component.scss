@@ -2,53 +2,88 @@
   padding: 16px;
 }
 
-/* =========================
-   CONTROLS
-========================= */
-.controls {
+.nav {
   display: flex;
-  flex-direction: column;
-  gap: 10px;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 16px;
 }
 
-/* =========================
-   CALENDRIER
-========================= */
 .calendar {
   display: flex;
   gap: 10px;
-
   overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-
   scroll-snap-type: x mandatory;
-
-  /* IMPORTANT: évite overflow global desktop */
-  max-width: 100%;
 }
 
-/* =========================
-   CARTE JOUR (DESKTOP DEFAULT)
-========================= */
 .day-card {
-  flex: 1;              /* 👈 clé principale */
-  min-width: 0;         /* 👈 évite overflow flex */
-  
-  background: var(--mat-sys-surface-container);
-  border-radius: 12px;
+  min-width: 180px;
+  min-height: 200px;
+  flex: 1;
   padding: 12px;
-
+  border-radius: 12px;
+  background: var(--mat-sys-surface-container);
   scroll-snap-align: start;
-
-  text-align: center;
 }
 
-/* =========================
-   MOBILE: SWIPE COMFORTABLE
-========================= */
+.generator {
+  margin: 16px auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 400px;
+  
+}
+
+.generator input {
+  width: 100%;
+  max-width: 250px;  
+}
+
+.generator-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-start;
+}
+
+.generator-actions button {
+  flex: 0 0 auto;   
+  width: auto;      
+  padding: 8px 14px;
+}
+
+.new-menu-btn {
+  width: 100%;
+  max-width: 220px;
+  margin-bottom: 12px;
+
+  padding: 10px 14px;
+  border-radius: 10px;
+
+  border: none;
+  cursor: pointer;
+
+  background: var(--mat-sys-primary);
+  color: var(--mat-sys-on-primary);
+
+  font-weight: 600;
+}
+
 @media (max-width: 600px) {
-  .day-card {
-    flex: 0 0 80%;      /* swipe visible */
+  .generator {
+    max-width: 100%;
   }
+
+  .generator input {
+    max-width: 100%;
+  }
+
+  .generator-actions {
+    flex-direction: column;
+  }
+
+  .generator-actions button {
+    width: 100%;
+  }
+    
 }
