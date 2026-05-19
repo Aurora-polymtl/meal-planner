@@ -22,6 +22,9 @@ export class PlannerComponent {
   startDate = '';
   numberOfDays = 7;
 
+  generateDinner = true;
+  generateSupper = true;
+
   // ===== DATA =====
   plans: MealPlan[] = [];
 
@@ -68,7 +71,8 @@ export class PlannerComponent {
 
       return {
         date: d.toISOString().split('T')[0],
-        meals: [],
+        dinner: this.generateDinner ? null : null,
+        supper: this.generateSupper ? null : null,
       };
     });
 
@@ -79,10 +83,9 @@ export class PlannerComponent {
     };
 
     this.plannerService.addPlan(plan);
-
     this.plans.push(plan);
 
-    this.currentWeekStart = new Date(start);
+    this.currentWeekStart = this.getMonday(start);
     this.showGenerator = false;
   }
 
@@ -100,22 +103,33 @@ export class PlannerComponent {
     });
   }
 
-  getMealsForDay(date: Date): string[] {
+  getDinnerForDay(date: Date): string | null {
     const iso = date.toISOString().split('T')[0];
 
     for (const plan of this.plans) {
-      const day = plan.days.find((d) => d.date === iso);
-      if (day) return day.meals;
+      const day = plan.days.find(d => d.date === iso);
+      if (day) return day.dinner;
     }
 
-    return [];
+    return null;
+  }
+
+  getSupperForDay(date: Date): string | null {
+    const iso = date.toISOString().split('T')[0];
+
+    for (const plan of this.plans) {
+      const day = plan.days.find(d => d.date === iso);
+      if (day) return day.supper;
+    }
+
+    return null;
   }
 
   getMonday(date: Date): Date {
     const d = new Date(date);
     d.setHours(0, 0, 0, 0);
 
-    const day = d.getDay(); // 0 = dimanche, 1 = lundi
+    const day = d.getDay();
     const diff = d.getDate() - (day === 0 ? 6 : day - 1);
 
     return new Date(d.setDate(diff));

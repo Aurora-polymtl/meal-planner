@@ -1,14 +1,13 @@
 <div class="planner-container">
-  <!-- BOUTON GENERATOR -->
+  <!-- BUTTON -->
   <button class="new-menu-btn" (click)="openGenerator()">Nouveau menu</button>
 
-  <!-- NAVIGATION + CALENDAR (HIDDEN WHEN GENERATOR OPEN) -->
   @if (!showGenerator) {
-    <!-- NAVIGATION -->
+    <!-- NAV -->
     <div class="nav">
       <button (click)="previousWeek()">←</button>
 
-      <h3>Semaine du {{ currentWeekStart ? (currentWeekStart | date) : '' }}</h3>
+      <h3>Semaine du {{ currentWeekStart | date }}</h3>
 
       <button (click)="nextWeek()">→</button>
     </div>
@@ -25,17 +24,20 @@
             {{ day | date: 'dd/MM' }}
           </div>
 
-          <div class="meals">
-            @for (meal of getMealsForDay(day); track meal) {
-              <p>{{ meal }}</p>
-            }
+          <div class="meal-slot">
+            <strong>Dîner</strong>
+            <p>{{ getDinnerForDay(day) || '—' }}</p>
+          </div>
+
+          <div class="meal-slot">
+            <strong>Souper</strong>
+            <p>{{ getSupperForDay(day) || '—' }}</p>
           </div>
         </div>
       }
     </div>
   }
 
-  <!-- GENERATOR (ONLY WHEN OPEN) -->
   @if (showGenerator) {
     <div class="generator">
       <label>Date de départ</label>
@@ -43,6 +45,16 @@
 
       <label>Nombre de jours</label>
       <input type="number" min="1" max="7" [(ngModel)]="numberOfDays" />
+
+      <div class="generator-option">
+        <label>Générer les dîners</label>
+        <input type="checkbox" [(ngModel)]="generateDinner" />
+      </div>
+
+      <div class="generator-option">
+        <label>Générer les soupers</label>
+        <input type="checkbox" [(ngModel)]="generateSupper" />
+      </div>
 
       <div class="generator-actions">
         <button (click)="generatePlan()">Générer</button>
