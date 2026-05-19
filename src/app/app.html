@@ -1,7 +1,20 @@
 <div class="tabs">
 
-  <button (click)="tab = 'meals'">Mes repas</button>
-  <button (click)="tab = 'planner'">Planification</button>
+  <button
+    class="tab"
+    [class.active]="tab === 'meals'"
+    (click)="tab = 'meals'"
+  >
+    Mes repas
+  </button>
+
+  <button
+    class="tab"
+    [class.active]="tab === 'planner'"
+    (click)="tab = 'planner'"
+  >
+    Planification
+  </button>
 
 </div>
 

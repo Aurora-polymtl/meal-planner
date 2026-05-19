@@ -1,0 +1,43 @@
+.tabs {
+  display: flex;
+  width: 100%;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+
+  background: var(--mat-sys-surface);
+}
+
+/* ===== TAB BUTTON ===== */
+.tab {
+  flex: 1; /* chaque onglet prend la même largeur */
+  padding: 12px 10px;
+
+  border: none;
+  background: transparent;
+
+  cursor: pointer;
+
+  font-weight: 500;
+  font-size: 14px;
+
+  color: var(--mat-sys-on-surface-variant);
+
+  border-bottom: 2px solid transparent;
+
+  transition: all 0.2s ease;
+}
+
+/* hover léger */
+.tab:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+/* onglet actif */
+.tab.active {
+  color: var(--mat-sys-primary);
+  border-bottom: 2px solid var(--mat-sys-primary);
+}
+
+/* séparation subtile entre onglets */
+.tab:not(:last-child) {
+  border-right: 1px solid rgba(0, 0, 0, 0.08);
+}
