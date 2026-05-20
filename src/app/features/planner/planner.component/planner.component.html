@@ -1,65 +1,118 @@
 <div class="planner-container">
-  <!-- BUTTON -->
-  <button class="new-menu-btn" (click)="openGenerator()">Nouveau menu</button>
+  <div class="planner-header">
+    <div>
+      <h1>Planification</h1>
+      <p>Visualise et génère tes repas pour la semaine.</p>
+    </div>
+
+    @if (!showGenerator) {
+      <button class="primary-button" type="button" (click)="openGenerator()">Nouveau menu</button>
+    }
+  </div>
 
   @if (!showGenerator) {
-    <!-- NAV -->
-    <div class="nav">
-      <button (click)="previousWeek()">←</button>
+    <section class="week-panel">
+      <div class="week-nav">
+        <button class="nav-button" type="button" (click)="previousWeek()">←</button>
 
-      <h3>Semaine du {{ currentWeekStart | date }}</h3>
-
-      <button (click)="nextWeek()">→</button>
-    </div>
-
-    <!-- CALENDAR -->
-    <div class="calendar">
-      @for (day of getWeekDays(currentWeekStart); track day.toISOString()) {
-        <div class="day-card">
-          <div class="day-name">
-            {{ day | date: 'EEEE' }}
-          </div>
-
-          <div class="date">
-            {{ day | date: 'dd/MM' }}
-          </div>
-
-          <div class="meal-slot">
-            <strong>Dîner</strong>
-            <p>{{ getDinnerForDay(day) || '—' }}</p>
-          </div>
-
-          <div class="meal-slot">
-            <strong>Souper</strong>
-            <p>{{ getSupperForDay(day) || '—' }}</p>
-          </div>
+        <div class="week-title">
+          <h2>Semaine du {{ currentWeekStart | date: 'd MMMM yyyy' }}</h2>
         </div>
-      }
-    </div>
+
+        <button class="nav-button" type="button" (click)="nextWeek()">→</button>
+      </div>
+
+      <div class="calendar">
+        @for (day of getWeekDays(currentWeekStart); track day.toISOString()) {
+          <article class="day-card">
+            <header class="day-header">
+              <strong>{{ day | date: 'EEEE' }}</strong>
+              <span>{{ day | date: 'dd/MM' }}</span>
+            </header>
+
+            <div class="meal-slot">
+              <strong>Dîner</strong>
+              <p>{{ getDinnerForDay(day) || '—' }}</p>
+            </div>
+
+            <div class="meal-slot">
+              <strong>Souper</strong>
+              <p>{{ getSupperForDay(day) || '—' }}</p>
+            </div>
+          </article>
+        }
+      </div>
+    </section>
   }
 
   @if (showGenerator) {
-    <div class="generator">
-      <label>Date de départ</label>
-      <input type="date" [(ngModel)]="startDate" />
-
-      <label>Nombre de jours</label>
-      <input type="number" min="1" max="7" [(ngModel)]="numberOfDays" />
-
-      <div class="generator-option">
-        <label>Générer les dîners</label>
-        <input type="checkbox" [(ngModel)]="generateDinner" />
+    <section class="generator-card">
+      <div class="generator-header">
+        <h2>Générer un menu</h2>
+        <p>Choisis la période et les repas à générer.</p>
       </div>
 
-      <div class="generator-option">
-        <label>Générer les soupers</label>
-        <input type="checkbox" [(ngModel)]="generateSupper" />
+      <div class="field-group">
+        <label for="start-date">Date de départ</label>
+        <input id="start-date" type="date" [(ngModel)]="startDate" />
       </div>
+
+      <div class="field-group">
+        <label for="number-of-days">Nombre de jours</label>
+        <input id="number-of-days" type="number" min="1" max="7" [(ngModel)]="numberOfDays" />
+      </div>
+
+      <div class="generator-options">
+        <label class="checkbox-row">
+          <span>Générer les dîners</span>
+          <input type="checkbox" [(ngModel)]="generateDinner" />
+        </label>
+
+        <label class="checkbox-row">
+          <span>Générer les soupers</span>
+          <input type="checkbox" [(ngModel)]="generateSupper" />
+        </label>
+      </div>
+
+      @if (errorMessage) {
+        <p class="error-message">{{ errorMessage }}</p>
+      }
+
+      @if (previewPlan) {
+        <section class="preview-card">
+          <h3>Aperçu du menu généré</h3>
+
+          <div class="preview-list">
+            @for (day of previewPlan.days; track day.date) {
+              <div class="preview-day">
+                <strong>{{ day.date | date: 'EEEE dd/MM' }}</strong>
+
+                @if (day.dinner) {
+                  <p><span>Dîner</span> {{ day.dinner }}</p>
+                }
+
+                @if (day.supper) {
+                  <p><span>Souper</span> {{ day.supper }}</p>
+                }
+              </div>
+            }
+          </div>
+        </section>
+      }
 
       <div class="generator-actions">
-        <button (click)="generatePlan()">Générer</button>
-        <button (click)="closeGenerator()">Annuler</button>
+        <button class="primary-button" type="button" (click)="generatePlan()">
+          {{ previewPlan ? 'Générer de nouveau' : 'Générer' }}
+        </button>
+
+        @if (previewPlan) {
+          <button class="primary-button" type="button" (click)="confirmPreviewPlan()">
+            Confirmer
+          </button>
+        }
+
+        <button class="secondary-button" type="button" (click)="closeGenerator()">Annuler</button>
       </div>
-    </div>
+    </section>
   }
 </div>
