@@ -16,6 +16,7 @@ import { Category } from '../../../models/category';
 export class MealDetailComponent {
   @Input() meal!: Meal;
   @Input() availableCategories: Category[] = [];
+  @Input() readonly = false;
   @Output() close = new EventEmitter<void>();
   @Output() updated = new EventEmitter<void>();
 
@@ -70,6 +71,7 @@ export class MealDetailComponent {
   }
 
   toggleEdit() {
+    if (this.readonly) return;
     this.editMode = !this.editMode;
   }
 

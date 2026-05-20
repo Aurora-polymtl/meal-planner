@@ -7,6 +7,6 @@ export interface MealPlan {
 export interface DayPlan {
   date: string;
 
-  dinner: string | null; // Dîner
-  supper: string | null; // Souper
+  dinnerMealId: string | null;
+  supperMealId: string | null;
 }

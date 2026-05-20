@@ -164,6 +164,20 @@ button:active {
   opacity: 0.75;
 }
 
+.meal-slot.clickable {
+  cursor: pointer;
+  transition:
+    transform 0.15s,
+    box-shadow 0.15s,
+    background 0.15s;
+}
+
+.meal-slot.clickable:hover {
+  transform: translateY(-1px);
+  background: rgba(0, 0, 0, 0.07);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+}
+
 /* =========================
    GENERATOR
    ========================= */

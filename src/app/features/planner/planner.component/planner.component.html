@@ -30,12 +30,20 @@
               <span>{{ day | date: 'dd/MM' }}</span>
             </header>
 
-            <div class="meal-slot">
+            <div
+              class="meal-slot"
+              [class.clickable]="getDinnerMealIdForDay(day)"
+              (click)="openMealDetails(getDinnerMealIdForDay(day))"
+            >
               <strong>Dîner</strong>
               <p>{{ getDinnerForDay(day) || '—' }}</p>
             </div>
 
-            <div class="meal-slot">
+            <div
+              class="meal-slot"
+              [class.clickable]="getSupperMealIdForDay(day)"
+              (click)="openMealDetails(getSupperMealIdForDay(day))"
+            >
               <strong>Souper</strong>
               <p>{{ getSupperForDay(day) || '—' }}</p>
             </div>
@@ -87,12 +95,12 @@
               <div class="preview-day">
                 <strong>{{ day.date | date: 'EEEE dd/MM' }}</strong>
 
-                @if (day.dinner) {
-                  <p><span>Dîner</span> {{ day.dinner }}</p>
+                @if (day.dinnerMealId) {
+                  <p><span>Dîner</span> {{ getMealNameById(day.dinnerMealId) }}</p>
                 }
 
-                @if (day.supper) {
-                  <p><span>Souper</span> {{ day.supper }}</p>
+                @if (day.supperMealId) {
+                  <p><span>Souper</span> {{ getMealNameById(day.supperMealId) }}</p>
                 }
               </div>
             }
@@ -114,5 +122,8 @@
         <button class="secondary-button" type="button" (click)="closeGenerator()">Annuler</button>
       </div>
     </section>
+  }
+  @if (selectedMeal) {
+    <app-meal-detail [meal]="selectedMeal" [readonly]="true" (close)="closeMealDetails()" />
   }
 </div>

@@ -21,15 +21,15 @@ export class MenuGeneratorService {
 
       return {
         date: this.toIsoDate(date),
-        dinner: options.generateDinner ? this.pickRandomMealName(meals) : null,
-        supper: options.generateSupper ? this.pickRandomMealName(meals) : null,
+        dinnerMealId: options.generateDinner ? this.pickRandomMealId(meals) : null,
+        supperMealId: options.generateSupper ? this.pickRandomMealId(meals) : null,
       };
     });
   }
 
-  private pickRandomMealName(meals: Meal[]): string {
+  private pickRandomMealId(meals: Meal[]): string {
     const index = Math.floor(Math.random() * meals.length);
-    return meals[index].name;
+    return meals[index].id;
   }
 
   private toIsoDate(date: Date): string {

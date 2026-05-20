@@ -6,9 +6,11 @@
         <p>{{ editMode ? 'Modification du repas' : 'Détails du repas' }}</p>
       </div>
 
-      <button class="mode-button" type="button" (click)="toggleEdit()">
-        {{ editMode ? 'Lecture' : 'Modifier' }}
-      </button>
+      @if (!readonly) {
+        <button class="mode-button" type="button" (click)="toggleEdit()">
+          {{ editMode ? 'Lecture' : 'Modifier' }}
+        </button>
+      }
     </header>
 
     <div class="detail-scroll">
@@ -111,7 +113,7 @@
     </div>
 
     <footer class="form-actions">
-      @if (editMode) {
+      @if (editMode && !readonly) {
         <button class="primary-button" type="button" (click)="save()">Sauvegarder</button>
       }
 
