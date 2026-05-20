@@ -16,4 +16,8 @@ export class MealService {
   delete(id: string) {
     return db.meals.delete(id);
   }
+
+  update(meal: Meal) {
+    return db.meals.put(meal);
+  }
 }

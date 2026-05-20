@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { MealListComponent } from './features/meals/meal-list/meal-list';
+import { MealListComponent } from './features/meals/meal-list.component/meal-list.component';
 import { PlannerComponent } from './features/planner/planner.component/planner.component';
 
 @Component({
@@ -9,5 +9,5 @@ import { PlannerComponent } from './features/planner/planner.component/planner.c
   styleUrl: './app.scss'
 })
 export class App {
-  tab: 'meals' | 'planner' = 'meals';
+  tab: 'meals' | 'planner' = 'planner';
 }

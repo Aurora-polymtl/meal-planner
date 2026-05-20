@@ -1,0 +1,212 @@
+<div class="app-container">
+
+  <h1>Mes repas</h1>
+
+  @if (!showForm) {
+    <button (click)="openForm()">Ajouter un plat</button>
+  }
+
+  <hr />
+
+  @if (showForm) {
+    <div class="form-block">
+
+      <input type="text" [(ngModel)]="name" placeholder="Nom du repas" />
+      <div class="error">{{ errors.name }}</div>
+
+      <div class="category-section">
+        <div class="category-input-row">
+          <input [(ngModel)]="categoryInput" placeholder="Ajouter une catégorie" />
+          <button (click)="addCategory()">Ajouter</button>
+        </div>
+
+        <div class="categories-list">
+          @for (c of categories; track c) {
+            <div class="category-chip">
+              <span>{{ c }}</span>
+              <button (click)="removeCategory(c)">×</button>
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="ingredients-section">
+
+        <button (click)="toggleIngredients()">
+          {{ showIngredients ? 'Masquer ingrédients' : 'Ajouter des ingrédients' }}
+        </button>
+
+        @if (showIngredients) {
+          <div class="ingredient-form">
+
+            <input [(ngModel)]="ingredientName" placeholder="Nom" />
+
+            <div class="quantity-unit-row">
+
+              @if (usesFractionalQuantity()) {
+                <select [(ngModel)]="ingredientQuantity">
+                  @for (q of fractionalQuantities; track q) {
+                    <option [value]="q">{{ q }}</option>
+                  }
+                </select>
+              } @else {
+                <input type="number" [(ngModel)]="ingredientQuantity" placeholder="Quantité" />
+              }
+
+              <select [(ngModel)]="ingredientUnit">
+                @for (u of units; track u) {
+                  <option [value]="u">{{ u }}</option>
+                }
+              </select>
+
+            </div>
+
+            <button (click)="addIngredient()">Ajouter</button>
+
+          </div>
+
+          <div class="ingredients-list">
+            @for (i of ingredients; track i.name; let idx = $index) {
+              <div class="ingredient-card">
+                <div>
+                  <strong>{{ i.name }}</strong><br />
+                  <small>{{ formatQuantity(i.quantity) }} {{ i.unit }}</small>
+                </div>
+
+                <button (click)="removeIngredient(idx)">×</button>
+              </div>
+            }
+          </div>
+        }
+
+      </div>
+
+      <div class="form-actions">
+        <button (click)="addMeal()">Enregistrer</button>
+        <button (click)="closeForm()">Fermer</button>
+      </div>
+
+    </div>
+  }
+
+  <!-- LISTE -->
+  @for (meal of meals; track meal.id) {
+    <div class="meal-card" (click)="openDetails(meal)">
+      <div>
+        <strong>{{ meal.name }}</strong>
+
+        <div class="meal-categories">
+          @for (c of meal.categories; track c) {
+            <span class="category-chip-display">{{ c }}</span>
+          }
+        </div>
+      </div>
+
+      <button (click)="deleteMeal(meal.id); $event.stopPropagation()">Supprimer</button>
+    </div>
+  }
+
+</div>
+
+@if (selectedMeal) {
+  <div class="detail-overlay">
+
+    <div class="detail-card">
+
+      <div class="detail-header">
+        <h2>{{ selectedMeal.name }}</h2>
+
+        @if (!editMode) {
+          <button (click)="enableEdit()">Modifier</button>
+        } @else {
+          <div style="display:flex; gap:10px;">
+            <button (click)="saveMealChanges()">Sauvegarder</button>
+            <button (click)="cancelEdit()">Annuler</button>
+          </div>
+        }
+      </div>
+
+      <div class="detail-scroll">
+
+        <h3>Catégories</h3>
+
+        <div class="chip-readonly">
+          @for (cat of selectedMeal.categories; track cat) {
+            <span class="category-chip-display">{{ cat }}</span>
+          }
+        </div>
+
+        <h3>Ingrédients</h3>
+
+        @for (ing of selectedMeal.ingredients; track ing.name) {
+          <div class="ingredient-card">
+            <div>
+              <strong>{{ ing.name }}</strong><br />
+              <small>{{ formatQuantity(ing.quantity) }} {{ ing.unit }}</small>
+            </div>
+          </div>
+        }
+
+        @if (editMode) {
+
+          <hr />
+
+          <h3>Ajouter / modifier</h3>
+
+          <div class="edit-row">
+            <input [(ngModel)]="editCategoryInput" placeholder="Ajouter catégorie" />
+            <button (click)="addCategoryToSelected()">Ajouter</button>
+          </div>
+
+          <h4>Catégories (suppression)</h4>
+
+          @for (cat of selectedMeal.categories; track cat) {
+            <div class="chip-row">
+              <span>{{ cat }}</span>
+              <button (click)="removeCategoryFromSelected(cat)">×</button>
+            </div>
+          }
+
+          <div class="edit-ingredient">
+
+            <input [(ngModel)]="editIngredientName" placeholder="Nom ingrédient" />
+
+            <div class="quantity-unit-row">
+              <input [(ngModel)]="editIngredientQuantity" placeholder="Quantité" />
+
+              <select [(ngModel)]="editIngredientUnit">
+                @for (u of units; track u) {
+                  <option [value]="u">{{ u }}</option>
+                }
+              </select>
+            </div>
+
+            <button (click)="addIngredientToSelected()">Ajouter ingrédient</button>
+
+          </div>
+
+          <h4>Ingrédients (suppression)</h4>
+
+          @for (ing of selectedMeal.ingredients; track ing.name; let i = $index) {
+            <div class="ingredient-card">
+              <div>
+                <strong>{{ ing.name }}</strong><br />
+                <small>{{ formatQuantity(ing.quantity) }} {{ ing.unit }}</small>
+              </div>
+
+              <button (click)="removeIngredientFromSelected(i)">×</button>
+            </div>
+          }
+
+        }
+
+      </div>
+
+      <div class="form-actions">
+        <button (click)="closeDetails()">Fermer</button>
+      </div>
+
+    </div>
+
+  </div>
+}
