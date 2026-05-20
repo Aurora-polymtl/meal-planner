@@ -29,9 +29,13 @@ export class PlannerComponent {
   meals: Meal[] = [];
 
   previewPlan: MealPlan | null = null;
-  errorMessage = '';
-
   selectedMeal: Meal | null = null;
+
+  errorMessage = '';
+  showConflictConfirmation = false;
+
+  isGenerating = false;
+  isConfirming = false;
 
   constructor(
     private plannerService: PlannerService,
@@ -71,42 +75,29 @@ export class PlannerComponent {
   openGenerator() {
     this.errorMessage = '';
     this.previewPlan = null;
+    this.showConflictConfirmation = false;
     this.startDate ||= this.toIsoDate(new Date());
     this.showGenerator = true;
     this.cdr.detectChanges();
   }
 
   closeGenerator() {
+    if (this.isGenerating || this.isConfirming) return;
+
     this.errorMessage = '';
     this.previewPlan = null;
+    this.showConflictConfirmation = false;
     this.showGenerator = false;
     this.cdr.detectChanges();
   }
 
-  openMealDetails(mealId: string | null) {
-    if (!mealId) return;
-
-    const meal = this.meals.find((m) => m.id === mealId);
-
-    if (!meal) return;
-
-    this.selectedMeal = structuredClone(meal);
-  }
-
-  closeMealDetails() {
-    this.selectedMeal = null;
-  }
-
-  getDinnerMealIdForDay(date: Date): string | null {
-    return this.getMealIdForDay(date, 'dinnerMealId');
-  }
-
-  getSupperMealIdForDay(date: Date): string | null {
-    return this.getMealIdForDay(date, 'supperMealId');
-  }
-
   async generatePlan() {
+    if (this.isGenerating || this.isConfirming) return;
+
     this.errorMessage = '';
+    this.showConflictConfirmation = false;
+    this.isGenerating = true;
+    this.cdr.detectChanges();
 
     try {
       await this.loadMeals();
@@ -117,29 +108,83 @@ export class PlannerComponent {
         generateDinner: this.generateDinner,
         generateSupper: this.generateSupper,
       });
-
-      this.cdr.detectChanges();
     } catch (error) {
+      this.previewPlan = null;
       this.errorMessage =
         error instanceof Error
           ? error.message
           : 'Une erreur est survenue pendant la génération du menu.';
-
+    } finally {
+      this.isGenerating = false;
       this.cdr.detectChanges();
     }
   }
 
   async confirmPreviewPlan() {
-    if (!this.previewPlan) return;
+    if (!this.previewPlan || this.isGenerating || this.isConfirming) return;
 
-    await this.plannerService.confirmPlan(this.previewPlan);
+    const planToConfirm = structuredClone(this.previewPlan);
+
+    this.errorMessage = '';
+    this.isConfirming = true;
+    this.cdr.detectChanges();
+
+    try {
+      await this.plannerService.confirmPlan(planToConfirm);
+      await this.applyConfirmedPlan(planToConfirm);
+    } catch (error) {
+      if (error instanceof Error && error.message === 'CONFLICT') {
+        this.showConflictConfirmation = true;
+        return;
+      }
+
+      this.errorMessage = 'Une erreur est survenue pendant la confirmation du menu.';
+    } finally {
+      this.isConfirming = false;
+      this.cdr.detectChanges();
+    }
+  }
+
+  async confirmPreviewPlanWithOverwrite() {
+    if (!this.previewPlan || this.isGenerating || this.isConfirming) return;
+
+    const planToConfirm = structuredClone(this.previewPlan);
+
+    this.errorMessage = '';
+    this.isConfirming = true;
+    this.cdr.detectChanges();
+
+    try {
+      await this.plannerService.confirmPlan(planToConfirm, true);
+      await this.applyConfirmedPlan(planToConfirm);
+    } catch {
+      this.errorMessage = 'Une erreur est survenue pendant le remplacement du menu.';
+    } finally {
+      this.isConfirming = false;
+      this.cdr.detectChanges();
+    }
+  }
+
+  private async applyConfirmedPlan(confirmedPlan: MealPlan) {
     await this.loadPlans();
 
-    this.currentWeekStart = this.getMonday(new Date(this.previewPlan.startDate));
+    this.currentWeekStart = this.getMonday(new Date(confirmedPlan.startDate));
     this.previewPlan = null;
+    this.showConflictConfirmation = false;
     this.showGenerator = false;
+  }
 
-    this.cdr.detectChanges();
+  openMealDetails(mealId: string | null) {
+    if (!mealId) return;
+
+    const meal = this.meals.find((m) => m.id === mealId);
+    if (!meal) return;
+
+    this.selectedMeal = structuredClone(meal);
+  }
+
+  closeMealDetails() {
+    this.selectedMeal = null;
   }
 
   getWeekDays(date: Date): Date[] {
@@ -152,14 +197,20 @@ export class PlannerComponent {
     });
   }
 
+  getDinnerMealIdForDay(date: Date): string | null {
+    return this.getMealIdForDay(date, 'dinnerMealId');
+  }
+
+  getSupperMealIdForDay(date: Date): string | null {
+    return this.getMealIdForDay(date, 'supperMealId');
+  }
+
   getDinnerForDay(date: Date): string | null {
-    const mealId = this.getMealIdForDay(date, 'dinnerMealId');
-    return this.getMealNameById(mealId);
+    return this.getMealNameById(this.getDinnerMealIdForDay(date));
   }
 
   getSupperForDay(date: Date): string | null {
-    const mealId = this.getMealIdForDay(date, 'supperMealId');
-    return this.getMealNameById(mealId);
+    return this.getMealNameById(this.getSupperMealIdForDay(date));
   }
 
   getMealNameById(mealId: string | null): string | null {
@@ -168,7 +219,10 @@ export class PlannerComponent {
     return this.meals.find((meal) => meal.id === mealId)?.name ?? 'Repas introuvable';
   }
 
-  private getMealIdForDay(date: Date, type: 'dinnerMealId' | 'supperMealId'): string | null {
+  private getMealIdForDay(
+    date: Date,
+    type: 'dinnerMealId' | 'supperMealId',
+  ): string | null {
     const iso = this.toIsoDate(date);
 
     for (const plan of [...this.plans].reverse()) {

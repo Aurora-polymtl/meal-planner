@@ -108,18 +108,76 @@
         </section>
       }
 
-      <div class="generator-actions">
-        <button class="primary-button" type="button" (click)="generatePlan()">
-          {{ previewPlan ? 'Générer de nouveau' : 'Générer' }}
-        </button>
+      @if (showConflictConfirmation) {
+        <div class="conflict-warning">
+          <strong>Conflit détecté</strong>
+          <p>
+            Certains repas existent déjà sur les dates sélectionnées. Veux-tu remplacer les repas
+            existants par ce nouveau menu?
+          </p>
+        </div>
+      }
 
-        @if (previewPlan) {
-          <button class="primary-button" type="button" (click)="confirmPreviewPlan()">
-            Confirmer
+      <div class="generator-actions">
+        @if (!previewPlan) {
+          <button
+            class="primary-button"
+            type="button"
+            [disabled]="isGenerating || isConfirming"
+            (click)="generatePlan()"
+          >
+            {{ isGenerating ? 'Génération...' : 'Générer' }}
           </button>
         }
 
-        <button class="secondary-button" type="button" (click)="closeGenerator()">Annuler</button>
+        @if (previewPlan && !showConflictConfirmation) {
+          <button
+            class="primary-button"
+            type="button"
+            [disabled]="isGenerating || isConfirming"
+            (click)="confirmPreviewPlan()"
+          >
+            {{ isConfirming ? 'Confirmation...' : 'Confirmer' }}
+          </button>
+
+          <button
+            class="secondary-button"
+            type="button"
+            [disabled]="isGenerating || isConfirming"
+            (click)="generatePlan()"
+          >
+            {{ isGenerating ? 'Génération...' : 'Générer de nouveau' }}
+          </button>
+        }
+
+        @if (previewPlan && showConflictConfirmation) {
+          <button
+            class="danger-button"
+            type="button"
+            [disabled]="isGenerating || isConfirming"
+            (click)="confirmPreviewPlanWithOverwrite()"
+          >
+            {{ isConfirming ? 'Remplacement...' : 'Remplacer' }}
+          </button>
+
+          <button
+            class="secondary-button"
+            type="button"
+            [disabled]="isGenerating || isConfirming"
+            (click)="generatePlan()"
+          >
+            Générer de nouveau
+          </button>
+        }
+
+        <button
+          class="secondary-button"
+          type="button"
+          [disabled]="isGenerating || isConfirming"
+          (click)="closeGenerator()"
+        >
+          Annuler
+        </button>
       </div>
     </section>
   }

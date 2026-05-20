@@ -315,6 +315,35 @@ input:focus {
   margin-right: 6px;
 }
 
+.conflict-warning {
+  padding: 12px;
+  border-radius: 12px;
+
+  background: rgba(239, 68, 68, 0.12);
+  color: #b91c1c;
+}
+
+.conflict-warning strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.conflict-warning p {
+  margin: 0;
+  font-size: 14px;
+}
+
+.danger-button {
+  background: #ef4444;
+  color: white;
+}
+
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+
 /* =========================
    MOBILE
    ========================= */

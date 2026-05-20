@@ -22,6 +22,10 @@ export class PlannerService {
     return db.plans.add(plan);
   }
 
+  updatePlan(plan: MealPlan) {
+    return db.plans.put(plan);
+  }
+
   deletePlan(id: string) {
     return db.plans.delete(id);
   }
@@ -48,7 +52,78 @@ export class PlannerService {
     };
   }
 
-  async confirmPlan(plan: MealPlan) {
+  async hasConflicts(plan: MealPlan): Promise<boolean> {
+    const existingPlans = await this.getPlans();
+
+    return existingPlans.some((existingPlan) =>
+      existingPlan.days.some((existingDay) => {
+        const newDay = plan.days.find((day) => day.date === existingDay.date);
+
+        if (!newDay) return false;
+
+        const dinnerConflict =
+          !!newDay.dinnerMealId && !!existingDay.dinnerMealId;
+
+        const supperConflict =
+          !!newDay.supperMealId && !!existingDay.supperMealId;
+
+        return dinnerConflict || supperConflict;
+      }),
+    );
+  }
+
+  async confirmPlan(plan: MealPlan, overwriteConflicts = false) {
+    const hasConflicts = await this.hasConflicts(plan);
+
+    if (hasConflicts && !overwriteConflicts) {
+      throw new Error('CONFLICT');
+    }
+
+    if (overwriteConflicts) {
+      await this.clearConflictingMeals(plan);
+    }
+
     await this.addPlan(plan);
+  }
+
+  private async clearConflictingMeals(newPlan: MealPlan) {
+    const existingPlans = await this.getPlans();
+
+    for (const existingPlan of existingPlans) {
+      let planChanged = false;
+
+      const updatedDays = existingPlan.days
+        .map((existingDay) => {
+          const newDay = newPlan.days.find((day) => day.date === existingDay.date);
+
+          if (!newDay) return existingDay;
+
+          const updatedDay = { ...existingDay };
+
+          if (newDay.dinnerMealId && updatedDay.dinnerMealId) {
+            updatedDay.dinnerMealId = null;
+            planChanged = true;
+          }
+
+          if (newDay.supperMealId && updatedDay.supperMealId) {
+            updatedDay.supperMealId = null;
+            planChanged = true;
+          }
+
+          return updatedDay;
+        })
+        .filter((day) => day.dinnerMealId || day.supperMealId);
+
+      if (!planChanged) continue;
+
+      if (updatedDays.length === 0) {
+        await this.deletePlan(existingPlan.id);
+      } else {
+        await this.updatePlan({
+          ...existingPlan,
+          days: updatedDays,
+        });
+      }
+    }
   }
 }
