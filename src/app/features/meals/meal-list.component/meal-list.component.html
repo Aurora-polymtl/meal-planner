@@ -5,22 +5,67 @@
       <p>Ajoute, consulte et modifie tes repas enregistrés.</p>
     </div>
 
-    @if (!showForm) {
-      <button class="primary-button" type="button" (click)="openForm()">
-        Ajouter un plat
+    <div class="header-actions">
+      <button class="secondary-button" type="button" (click)="toggleCategoryManager()">
+        Catégories
       </button>
-    }
+
+      @if (!showForm) {
+        <button class="primary-button" type="button" (click)="openForm()">
+          Ajouter un plat
+        </button>
+      }
+    </div>
   </div>
+
+  @if (showCategoryManager) {
+    <section class="category-manager">
+      <h2>Catégories disponibles</h2>
+
+      <div class="category-input-row">
+        <input
+          [(ngModel)]="newCategoryName"
+          placeholder="Nouvelle catégorie"
+        />
+
+        <button class="primary-button" type="button" (click)="addCategory()">
+          Ajouter
+        </button>
+      </div>
+
+      <div class="categories-list">
+        @for (category of categories; track category.name) {
+          <span class="category-chip">
+            {{ category.name }}
+            <button type="button" (click)="deleteCategory(category.name)">×</button>
+          </span>
+        }
+      </div>
+    </section>
+  }
 
   @if (showForm) {
     <app-meal-form
+      [availableCategories]="categories"
       (close)="closeForm()"
       (saved)="onMealSaved()"
     />
   }
 
+  <section class="filter-section">
+    <label for="category-filter">Filtrer par catégorie</label>
+
+    <select id="category-filter" [(ngModel)]="selectedCategoryFilter">
+      <option value="">Toutes les catégories</option>
+
+      @for (category of categories; track category.name) {
+        <option [value]="category.name">{{ category.name }}</option>
+      }
+    </select>
+  </section>
+
   <div class="meals-list">
-    @for (meal of meals; track meal.id) {
+    @for (meal of filteredMeals; track meal.id) {
       <article class="meal-card" (click)="openDetails(meal)">
         <div class="meal-info">
           <strong>{{ meal.name }}</strong>
@@ -41,12 +86,15 @@
           ×
         </button>
       </article>
+    } @empty {
+      <p class="empty-message">Aucun repas ne correspond au filtre sélectionné.</p>
     }
   </div>
 
   @if (selectedMeal) {
     <app-meal-detail
       [meal]="selectedMeal"
+      [availableCategories]="categories"
       (close)="closeDetails()"
       (updated)="onMealUpdated()"
     />

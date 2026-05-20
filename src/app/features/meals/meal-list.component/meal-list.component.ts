@@ -1,7 +1,9 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MealService } from '../meal.service';
+import { CategoryService } from '../category.service';
 import { Meal } from '../../../models/meal';
+import { Category } from '../../../models/category';
 
 import { MealFormComponent } from '../meal-form.component/meal-form.component';
 import { MealDetailComponent } from '../meal-detail.component/meal-detail.component';
@@ -15,21 +17,47 @@ import { MealDetailComponent } from '../meal-detail.component/meal-detail.compon
 })
 export class MealListComponent implements OnInit {
   meals: Meal[] = [];
+  categories: Category[] = [];
 
   showForm = false;
+  showCategoryManager = false;
+
   selectedMeal: Meal | null = null;
+  selectedCategoryFilter = '';
+
+  newCategoryName = '';
 
   constructor(
     private mealService: MealService,
+    private categoryService: CategoryService,
     private cdr: ChangeDetectorRef,
   ) {}
 
   async ngOnInit() {
-    await this.loadMeals();
+    await this.loadData();
+  }
+
+  get filteredMeals() {
+    if (!this.selectedCategoryFilter) {
+      return this.meals;
+    }
+
+    return this.meals.filter((meal) =>
+      meal.categories.includes(this.selectedCategoryFilter),
+    );
+  }
+
+  async loadData() {
+    await Promise.all([this.loadMeals(), this.loadCategories()]);
   }
 
   async loadMeals() {
     this.meals = await this.mealService.getAll();
+    this.cdr.detectChanges();
+  }
+
+  async loadCategories() {
+    this.categories = await this.categoryService.getAll();
     this.cdr.detectChanges();
   }
 
@@ -48,6 +76,26 @@ export class MealListComponent implements OnInit {
 
   closeDetails() {
     this.selectedMeal = null;
+  }
+
+  toggleCategoryManager() {
+    this.showCategoryManager = !this.showCategoryManager;
+  }
+
+  async addCategory() {
+    await this.categoryService.add(this.newCategoryName);
+    this.newCategoryName = '';
+    await this.loadCategories();
+  }
+
+  async deleteCategory(name: string) {
+    await this.categoryService.delete(name);
+
+    if (this.selectedCategoryFilter === name) {
+      this.selectedCategoryFilter = '';
+    }
+
+    await this.loadCategories();
   }
 
   async deleteMeal(id: string) {

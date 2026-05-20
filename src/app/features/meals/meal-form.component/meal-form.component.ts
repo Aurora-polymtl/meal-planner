@@ -4,6 +4,8 @@ import { MealService } from '../meal.service';
 import { MealValidationService, MealErrors } from '../meal-validation.service';
 import { Ingredient, Meal } from '../../../models/meal';
 import { MealUtils } from '../meal-utils';
+import { Input } from '@angular/core';
+import { Category } from '../../../models/category';
 
 @Component({
   selector: 'app-meal-form',
@@ -13,6 +15,7 @@ import { MealUtils } from '../meal-utils';
   imports: [FormsModule],
 })
 export class MealFormComponent {
+  @Input() availableCategories: Category[] = [];
   @Output() close = new EventEmitter<void>();
   @Output() saved = new EventEmitter<void>();
 

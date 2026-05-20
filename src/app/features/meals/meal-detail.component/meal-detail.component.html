@@ -29,10 +29,13 @@
 
         @if (editMode) {
           <div class="edit-row">
-            <input
-              [(ngModel)]="editCategoryInput"
-              placeholder="Ajouter une catégorie"
-            />
+            <select [(ngModel)]="editCategoryInput">
+              <option value="">Choisir une catégorie</option>
+
+              @for (category of availableCategories; track category.name) {
+                <option [value]="category.name">{{ category.name }}</option>
+              }
+            </select>
 
             <button type="button" (click)="addCategory()">+</button>
           </div>
@@ -73,10 +76,7 @@
                 <label for="detail-ingredient-quantity">Quantité</label>
 
                 @if (usesFractionalQuantity()) {
-                  <select
-                    id="detail-ingredient-quantity"
-                    [(ngModel)]="editIngredientQuantity"
-                  >
+                  <select id="detail-ingredient-quantity" [(ngModel)]="editIngredientQuantity">
                     <option value="">Choisir</option>
                     @for (q of fractionalQuantities; track q) {
                       <option [value]="q">{{ q }}</option>
@@ -112,14 +112,10 @@
 
     <footer class="form-actions">
       @if (editMode) {
-        <button class="primary-button" type="button" (click)="save()">
-          Sauvegarder
-        </button>
+        <button class="primary-button" type="button" (click)="save()">Sauvegarder</button>
       }
 
-      <button class="secondary-button" type="button" (click)="close.emit()">
-        Fermer
-      </button>
+      <button class="secondary-button" type="button" (click)="close.emit()">Fermer</button>
     </footer>
   </div>
 </div>

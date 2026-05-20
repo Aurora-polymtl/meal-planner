@@ -4,6 +4,7 @@ import { Meal } from '../../../models/meal';
 import { MealService } from '../meal.service';
 import { QuantityFormatService } from '../../../core/utils/quantity-format.service';
 import { MealUtils } from '../meal-utils';
+import { Category } from '../../../models/category';
 
 @Component({
   selector: 'app-meal-detail',
@@ -14,6 +15,7 @@ import { MealUtils } from '../meal-utils';
 })
 export class MealDetailComponent {
   @Input() meal!: Meal;
+  @Input() availableCategories: Category[] = [];
   @Output() close = new EventEmitter<void>();
   @Output() updated = new EventEmitter<void>();
 
