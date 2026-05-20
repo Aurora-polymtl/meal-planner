@@ -1,1 +1,125 @@
-<p>meal-detail.component works!</p>
+<div class="detail-overlay">
+  <div class="detail-card">
+    <header class="detail-header">
+      <div>
+        <h2>{{ meal.name }}</h2>
+        <p>{{ editMode ? 'Modification du repas' : 'Détails du repas' }}</p>
+      </div>
+
+      <button class="mode-button" type="button" (click)="toggleEdit()">
+        {{ editMode ? 'Lecture' : 'Modifier' }}
+      </button>
+    </header>
+
+    <div class="detail-scroll">
+      <section class="detail-section">
+        <h3>Catégories</h3>
+
+        <div class="chip-list">
+          @for (c of meal.categories; track c) {
+            <span class="chip">
+              {{ c }}
+
+              @if (editMode) {
+                <button type="button" (click)="removeCategory(c)">×</button>
+              }
+            </span>
+          }
+        </div>
+
+        @if (editMode) {
+          <div class="edit-row">
+            <input
+              [(ngModel)]="editCategoryInput"
+              placeholder="Ajouter une catégorie"
+            />
+
+            <button type="button" (click)="addCategory()">+</button>
+          </div>
+        }
+      </section>
+
+      <section class="detail-section">
+        <h3>Ingrédients</h3>
+
+        <div class="ingredients-list">
+          @for (i of meal.ingredients ?? []; track i.name; let idx = $index) {
+            <div class="ingredient-card">
+              <div>
+                <strong>{{ i.name }}</strong>
+                <small>{{ formatQuantity(i.quantity) }} {{ i.unit }}</small>
+              </div>
+
+              @if (editMode) {
+                <button type="button" (click)="removeIngredient(idx)">×</button>
+              }
+            </div>
+          }
+        </div>
+
+        @if (editMode) {
+          <div class="edit-ingredient">
+            <div class="field-group">
+              <label for="detail-ingredient-name">Nom ingrédient</label>
+              <input
+                id="detail-ingredient-name"
+                [(ngModel)]="editIngredientName"
+                placeholder="Ex. Tomates"
+              />
+            </div>
+
+            <div class="quantity-unit-row">
+              <div class="field-group">
+                <label for="detail-ingredient-quantity">Quantité</label>
+
+                @if (usesFractionalQuantity()) {
+                  <select
+                    id="detail-ingredient-quantity"
+                    [(ngModel)]="editIngredientQuantity"
+                  >
+                    <option value="">Choisir</option>
+                    @for (q of fractionalQuantities; track q) {
+                      <option [value]="q">{{ q }}</option>
+                    }
+                  </select>
+                } @else {
+                  <input
+                    id="detail-ingredient-quantity"
+                    type="number"
+                    [(ngModel)]="editIngredientQuantity"
+                    placeholder="Ex. 2"
+                  />
+                }
+              </div>
+
+              <div class="field-group">
+                <label for="detail-ingredient-unit">Unité</label>
+                <select id="detail-ingredient-unit" [(ngModel)]="editIngredientUnit">
+                  @for (u of units; track u) {
+                    <option [value]="u">{{ u }}</option>
+                  }
+                </select>
+              </div>
+            </div>
+
+            <button class="secondary-button compact" type="button" (click)="addIngredient()">
+              Ajouter l’ingrédient
+            </button>
+          </div>
+        }
+      </section>
+    </div>
+
+    <footer class="form-actions">
+      @if (editMode) {
+        <button class="primary-button" type="button" (click)="save()">
+          Sauvegarder
+        </button>
+      }
+
+      <button class="secondary-button" type="button" (click)="close.emit()">
+        Fermer
+      </button>
+    </footer>
+  </div>
+</div>

@@ -1,0 +1,121 @@
+<div class="form-container">
+  <div class="field-group">
+    <label for="meal-name">Nom du repas</label>
+    <input id="meal-name" [(ngModel)]="name" placeholder="Ex. Tacos" />
+    @if (errors.name) {
+      <div class="error">{{ errors.name }}</div>
+    }
+  </div>
+
+  <section class="category-section">
+    <div class="field-group">
+      <label for="category-input">Catégories</label>
+
+      <div class="category-input-row">
+        <input
+          id="category-input"
+          [(ngModel)]="categoryInput"
+          placeholder="Ex. Rapide, Végétarien, Fin de semaine"
+        />
+
+        <button class="icon-button" type="button" (click)="addCategory()">
+          +
+        </button>
+      </div>
+
+      @if (errors.category) {
+        <div class="error">{{ errors.category }}</div>
+      }
+    </div>
+
+    <div class="categories-list">
+      @for (c of categories; track c) {
+        <div class="category-chip">
+          {{ c }}
+          <button type="button" (click)="removeCategory(c)">×</button>
+        </div>
+      }
+    </div>
+  </section>
+
+  <section class="ingredients-section">
+    <button class="secondary-button" type="button" (click)="toggleIngredients()">
+      {{ showIngredients ? 'Masquer ingrédients' : 'Ajouter ingrédients' }}
+    </button>
+
+    @if (showIngredients) {
+      <div class="ingredient-form">
+        <div class="field-group">
+          <label for="ingredient-name">Nom de l’ingrédient</label>
+          <input
+            id="ingredient-name"
+            [(ngModel)]="ingredientName"
+            placeholder="Ex. Tomates"
+          />
+        </div>
+
+        <div class="quantity-unit-row">
+          <div class="field-group">
+            <label for="ingredient-quantity">Quantité</label>
+
+            @if (usesFractionalQuantity()) {
+              <select id="ingredient-quantity" [(ngModel)]="ingredientQuantity">
+                <option value="">Choisir</option>
+                @for (q of fractionalQuantities; track q) {
+                  <option [value]="q">{{ q }}</option>
+                }
+              </select>
+            } @else {
+              <input
+                id="ingredient-quantity"
+                type="number"
+                [(ngModel)]="ingredientQuantity"
+                placeholder="Ex. 2"
+              />
+            }
+          </div>
+
+          <div class="field-group">
+            <label for="ingredient-unit">Unité</label>
+            <select id="ingredient-unit" [(ngModel)]="ingredientUnit">
+              @for (u of units; track u) {
+                <option [value]="u">{{ u }}</option>
+              }
+            </select>
+          </div>
+        </div>
+
+        @if (errors.ingredient) {
+          <div class="error">{{ errors.ingredient }}</div>
+        }
+
+        <button class="secondary-button compact" type="button" (click)="addIngredient()">
+          Ajouter l’ingrédient
+        </button>
+      </div>
+    }
+
+    <div class="ingredients-list">
+      @for (i of ingredients; track i.name; let idx = $index) {
+        <div class="ingredient-card">
+          <div>
+            <strong>{{ i.name }}</strong>
+            <small>{{ i.quantity }} {{ i.unit }}</small>
+          </div>
+
+          <button type="button" (click)="removeIngredient(idx)">×</button>
+        </div>
+      }
+    </div>
+  </section>
+
+  <div class="form-actions">
+    <button class="primary-button" type="button" (click)="addMeal()">
+      Enregistrer
+    </button>
+
+    <button class="secondary-button" type="button" (click)="closeForm()">
+      Fermer
+    </button>
+  </div>
+</div>
