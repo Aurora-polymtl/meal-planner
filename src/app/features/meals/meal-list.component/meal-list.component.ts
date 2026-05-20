@@ -16,9 +16,9 @@ import { QuantityFormatService } from '../../../core/utils/quantity-format.servi
 export class MealListComponent implements OnInit {
   meals: Meal[] = [];
 
-  name: string = '';
+  name = '';
 
-  categoryInput: string = '';
+  categoryInput = '';
   categories: string[] = [];
 
   showIngredients = false;
@@ -30,12 +30,8 @@ export class MealListComponent implements OnInit {
   ingredients: Ingredient[] = [];
 
   showForm = false;
-
   errors: MealErrors = {};
 
-  // =====================
-  // DÉTAIL
-  // =====================
   selectedMeal: Meal | null = null;
   editMode = false;
 
@@ -45,18 +41,51 @@ export class MealListComponent implements OnInit {
   editIngredientUnit = '';
 
   units = [
-    'g','kg','mL','L','tasse','cuillère à thé',
-    'cuillère à soupe','oz','lb','unité',
+    'g',
+    'kg',
+    'mL',
+    'L',
+    'tasse',
+    'cuillère à thé',
+    'cuillère à soupe',
+    'oz',
+    'lb',
+    'unité',
   ];
 
   fractionalUnits = ['tasse', 'cuillère à thé', 'cuillère à soupe'];
 
   fractionalQuantities = [
-    '1/8','1/4','1/3','1/2','2/3','3/4',
-    '1','1 1/4','1 1/3','1 1/2','1 2/3','1 3/4',
-    '2','2 1/4','2 1/3','2 1/2','2 2/3','2 3/4',
-    '3','3 1/4','3 1/3','3 1/2','3 2/3','3 3/4',
-    '4','4 1/4','4 1/3','4 1/2','4 2/3','4 3/4',
+    '1/8',
+    '1/4',
+    '1/3',
+    '1/2',
+    '2/3',
+    '3/4',
+    '1',
+    '1 1/4',
+    '1 1/3',
+    '1 1/2',
+    '1 2/3',
+    '1 3/4',
+    '2',
+    '2 1/4',
+    '2 1/3',
+    '2 1/2',
+    '2 2/3',
+    '2 3/4',
+    '3',
+    '3 1/4',
+    '3 1/3',
+    '3 1/2',
+    '3 2/3',
+    '3 3/4',
+    '4',
+    '4 1/4',
+    '4 1/3',
+    '4 1/2',
+    '4 2/3',
+    '4 3/4',
     '5',
   ];
 
@@ -71,35 +100,40 @@ export class MealListComponent implements OnInit {
     await this.loadMeals();
   }
 
-  // =====================
-  // DATA
-  // =====================
   async loadMeals() {
     this.meals = await this.mealService.getAll();
     this.cdr.detectChanges();
   }
 
   // =====================
-  // FORMAT
-  // =====================
-  formatQuantity(value: number): string {
-    return this.quantityFormat.format(value);
-  }
-
-  // =====================
   // FORM
   // =====================
+
   openForm() {
     this.showForm = true;
   }
 
   closeForm() {
     this.showForm = false;
+
+    // reset propre
+    this.name = '';
+    this.categories = [];
+    this.ingredients = [];
   }
 
   // =====================
-  // CATÉGORIES (FORM)
+  // FORMAT
   // =====================
+
+  formatQuantity(value: number): string {
+    return this.quantityFormat.format(value);
+  }
+
+  // =====================
+  // CATÉGORIES
+  // =====================
+
   addCategory() {
     const error = this.validationService.validateCategory(this.categoryInput);
 
@@ -125,10 +159,15 @@ export class MealListComponent implements OnInit {
   }
 
   // =====================
-  // INGREDIENTS (FORM)
+  // INGREDIENTS
   // =====================
+
   toggleIngredients() {
     this.showIngredients = !this.showIngredients;
+  }
+
+  usesFractionalQuantity(): boolean {
+    return this.fractionalUnits.includes(this.ingredientUnit);
   }
 
   addIngredient() {
@@ -143,7 +182,8 @@ export class MealListComponent implements OnInit {
       return;
     }
 
-    if (!this.ingredientName && !this.ingredientQuantity && !this.ingredientUnit) {
+    if (!this.ingredientName || !this.ingredientQuantity || !this.ingredientUnit) {
+      this.errors.ingredient = 'Tous les champs sont requis.';
       return;
     }
 
@@ -163,13 +203,10 @@ export class MealListComponent implements OnInit {
     this.ingredients.splice(index, 1);
   }
 
-  usesFractionalQuantity(): boolean {
-    return this.fractionalUnits.includes(this.ingredientUnit);
-  }
-
   // =====================
   // PARSING
   // =====================
+
   parseQuantity(value: string | number): number {
     if (typeof value === 'number') return value;
     if (!value) return 0;
@@ -177,50 +214,35 @@ export class MealListComponent implements OnInit {
     if (!value.includes('/')) return parseFloat(value);
 
     if (value.includes(' ')) {
-      const parts = value.split(' ');
-      const whole = parseFloat(parts[0]);
-      const fraction = this.parseFraction(parts[1]);
-      return whole + fraction;
+      const [whole, frac] = value.split(' ');
+      return parseFloat(whole) + this.parseFraction(frac);
     }
 
     return this.parseFraction(value);
   }
 
-  parseFraction(fraction: string): number {
-    const parts = fraction.split('/');
-    return parseFloat(parts[0]) / parseFloat(parts[1]);
+  parseFraction(f: string): number {
+    const [a, b] = f.split('/');
+    return parseFloat(a) / parseFloat(b);
   }
 
   // =====================
   // SAVE
   // =====================
+
   async addMeal() {
-    this.errors = this.validationService.validateMeal(
-      this.name,
-      this.categories,
-      this.meals,
-    );
+    this.errors = this.validationService.validateMeal(this.name, this.categories, this.meals);
 
     if (this.errors.name || this.errors.category) return;
 
-    const newMeal: Meal = {
+    await this.mealService.add({
       id: crypto.randomUUID(),
       name: this.name.trim(),
       categories: this.categories,
       ingredients: this.ingredients,
-    };
+    });
 
-    await this.mealService.add(newMeal);
-
-    this.name = '';
-    this.categoryInput = '';
-    this.categories = [];
-    this.ingredients = [];
-
-    this.ingredientName = '';
-    this.ingredientQuantity = '';
-    this.ingredientUnit = '';
-
+    this.closeForm();
     await this.loadMeals();
   }
 
@@ -232,6 +254,7 @@ export class MealListComponent implements OnInit {
   // =====================
   // DETAIL
   // =====================
+
   openDetails(meal: Meal) {
     this.selectedMeal = structuredClone(meal);
     this.editMode = false;
@@ -246,15 +269,6 @@ export class MealListComponent implements OnInit {
     this.editMode = true;
   }
 
-  cancelEdit() {
-    this.editMode = false;
-
-    this.editCategoryInput = '';
-    this.editIngredientName = '';
-    this.editIngredientQuantity = '';
-    this.editIngredientUnit = '';
-  }
-
   async saveMealChanges() {
     if (!this.selectedMeal) return;
 
@@ -265,45 +279,38 @@ export class MealListComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
-  // =====================
-  // EDIT CATÉGORIES
-  // =====================
+  // CATÉGORIES EDIT
   addCategoryToSelected() {
     if (!this.selectedMeal) return;
 
-    const value = this.editCategoryInput.trim();
-    if (!value) return;
+    const v = this.editCategoryInput.trim();
+    if (!v) return;
 
-    if (this.selectedMeal.categories.includes(value)) return;
+    if (!this.selectedMeal.categories.includes(v)) {
+      this.selectedMeal.categories.push(v);
+    }
 
-    this.selectedMeal.categories.push(value);
     this.editCategoryInput = '';
   }
 
-  removeCategoryFromSelected(category: string) {
+  removeCategoryFromSelected(cat: string) {
     if (!this.selectedMeal) return;
 
-    this.selectedMeal.categories =
-      this.selectedMeal.categories.filter((c) => c !== category);
+    this.selectedMeal.categories = this.selectedMeal.categories.filter((c) => c !== cat);
   }
 
-  // =====================
-  // EDIT INGREDIENTS
-  // =====================
+  // INGREDIENTS EDIT
   addIngredientToSelected() {
     if (!this.selectedMeal) return;
 
-    const meal = this.selectedMeal;
-
-    if (!this.editIngredientName || !this.editIngredientUnit) return;
-
-    const newIngredient: Ingredient = {
-      name: this.editIngredientName.trim(),
-      quantity: this.parseQuantity(this.editIngredientQuantity),
-      unit: this.editIngredientUnit,
-    };
-
-    meal.ingredients = [...(meal.ingredients ?? []), newIngredient];
+    this.selectedMeal.ingredients = [
+      ...(this.selectedMeal.ingredients ?? []),
+      {
+        name: this.editIngredientName.trim(),
+        quantity: this.parseQuantity(this.editIngredientQuantity),
+        unit: this.editIngredientUnit,
+      },
+    ];
 
     this.editIngredientName = '';
     this.editIngredientQuantity = '';
@@ -313,7 +320,8 @@ export class MealListComponent implements OnInit {
   removeIngredientFromSelected(index: number) {
     if (!this.selectedMeal) return;
 
-    this.selectedMeal.ingredients =
-      (this.selectedMeal.ingredients ?? []).filter((_, i) => i !== index);
+    this.selectedMeal.ingredients = (this.selectedMeal.ingredients ?? []).filter(
+      (_, i) => i !== index,
+    );
   }
 }
