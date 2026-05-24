@@ -1,5 +1,4 @@
 <div class="tabs">
-
   <button
     class="tab"
     [class.active]="tab === 'meals'"
@@ -16,6 +15,13 @@
     Planification
   </button>
 
+  <button
+    class="tab"
+    [class.active]="tab === 'categories'"
+    (click)="tab = 'categories'"
+  >
+    Catégories
+  </button>
 </div>
 
 @if (tab === 'meals') {
@@ -24,4 +30,8 @@
 
 @if (tab === 'planner') {
   <app-planner />
+}
+
+@if (tab === 'categories') {
+  <app-category-manager />
 }

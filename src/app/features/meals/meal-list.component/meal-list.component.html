@@ -5,44 +5,12 @@
       <p>Ajoute, consulte et modifie tes repas enregistrés.</p>
     </div>
 
-    <div class="header-actions">
-      <button class="secondary-button" type="button" (click)="toggleCategoryManager()">
-        Catégories
+    @if (!showForm) {
+      <button class="primary-button" type="button" (click)="openForm()">
+        Ajouter un plat
       </button>
-
-      @if (!showForm) {
-        <button class="primary-button" type="button" (click)="openForm()">
-          Ajouter un plat
-        </button>
-      }
-    </div>
+    }
   </div>
-
-  @if (showCategoryManager) {
-    <section class="category-manager">
-      <h2>Catégories disponibles</h2>
-
-      <div class="category-input-row">
-        <input
-          [(ngModel)]="newCategoryName"
-          placeholder="Nouvelle catégorie"
-        />
-
-        <button class="primary-button" type="button" (click)="addCategory()">
-          Ajouter
-        </button>
-      </div>
-
-      <div class="categories-list">
-        @for (category of categories; track category.name) {
-          <span class="category-chip">
-            {{ category.name }}
-            <button type="button" (click)="deleteCategory(category.name)">×</button>
-          </span>
-        }
-      </div>
-    </section>
-  }
 
   @if (showForm) {
     <app-meal-form

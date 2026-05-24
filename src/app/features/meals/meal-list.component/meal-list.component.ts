@@ -20,12 +20,9 @@ export class MealListComponent implements OnInit {
   categories: Category[] = [];
 
   showForm = false;
-  showCategoryManager = false;
 
   selectedMeal: Meal | null = null;
   selectedCategoryFilter = '';
-
-  newCategoryName = '';
 
   constructor(
     private mealService: MealService,
@@ -76,26 +73,6 @@ export class MealListComponent implements OnInit {
 
   closeDetails() {
     this.selectedMeal = null;
-  }
-
-  toggleCategoryManager() {
-    this.showCategoryManager = !this.showCategoryManager;
-  }
-
-  async addCategory() {
-    await this.categoryService.add(this.newCategoryName);
-    this.newCategoryName = '';
-    await this.loadCategories();
-  }
-
-  async deleteCategory(name: string) {
-    await this.categoryService.delete(name);
-
-    if (this.selectedCategoryFilter === name) {
-      this.selectedCategoryFilter = '';
-    }
-
-    await this.loadCategories();
   }
 
   async deleteMeal(id: string) {

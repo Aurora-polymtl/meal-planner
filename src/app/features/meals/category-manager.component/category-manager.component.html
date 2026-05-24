@@ -1,0 +1,34 @@
+<div class="app-container">
+  <div class="page-header">
+    <div>
+      <h1>Catégories</h1>
+      <p>Gère les catégories disponibles pour classer tes repas.</p>
+    </div>
+  </div>
+
+  <section class="category-manager">
+    <h2>Catégories disponibles</h2>
+
+    <div class="category-input-row">
+      <input
+        [(ngModel)]="newCategoryName"
+        placeholder="Nouvelle catégorie"
+      />
+
+      <button class="primary-button" type="button" (click)="addCategory()">
+        Ajouter
+      </button>
+    </div>
+
+    <div class="categories-list">
+      @for (category of categories; track category.name) {
+        <span class="category-chip">
+          {{ category.name }}
+          <button type="button" (click)="deleteCategory(category.name)">×</button>
+        </span>
+      } @empty {
+        <p class="empty-message">Aucune catégorie disponible.</p>
+      }
+    </div>
+  </section>
+</div>
