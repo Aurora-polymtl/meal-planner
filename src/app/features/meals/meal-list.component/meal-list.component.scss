@@ -53,13 +53,21 @@ button:active {
   transform: scale(0.98);
 }
 
+.filters-section {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+
+  margin-bottom: 18px;
+}
+
 .filter-section {
   display: flex;
   flex-direction: column;
   gap: 6px;
 
-  max-width: 280px;
-  margin-bottom: 18px;
+  width: min(100%, 280px);
 }
 
 .filter-section label {
@@ -200,7 +208,12 @@ select:focus {
     width: 100%;
   }
 
-  .filter-section {
-    max-width: none;
-  }
+  .filters-section {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.filter-section {
+  width: 100%;
+}
 }

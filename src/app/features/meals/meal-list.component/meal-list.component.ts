@@ -23,6 +23,7 @@ export class MealListComponent implements OnInit {
 
   selectedMeal: Meal | null = null;
   selectedCategoryFilter = '';
+  selectedMealUsageFilter = '';
 
   constructor(
     private mealService: MealService,
@@ -35,14 +36,21 @@ export class MealListComponent implements OnInit {
   }
 
   get filteredMeals() {
-    if (!this.selectedCategoryFilter) {
-      return this.meals;
-    }
+  return this.meals.filter((meal) => {
+    const matchesCategory =
+      !this.selectedCategoryFilter ||
+      meal.categories.includes(this.selectedCategoryFilter);
 
-    return this.meals.filter((meal) =>
-      meal.categories.includes(this.selectedCategoryFilter),
-    );
-  }
+    const usage = meal.mealUsage ?? 'both';
+
+    const matchesUsage =
+      !this.selectedMealUsageFilter ||
+      usage === this.selectedMealUsageFilter ||
+      usage === 'both';
+
+    return matchesCategory && matchesUsage;
+  });
+}
 
   async loadData() {
     await Promise.all([this.loadMeals(), this.loadCategories()]);

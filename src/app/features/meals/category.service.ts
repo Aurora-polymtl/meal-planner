@@ -8,6 +8,10 @@ const DEFAULT_CATEGORIES: Category[] = [
   { name: 'Végétarien' },
   { name: 'Fin de semaine' },
   { name: 'Junk' },
+  { name: 'Semaine' },
+  { name: 'Vendredi' },
+  { name: 'Été' },
+  { name: 'Hiver' },
 ];
 
 @Injectable({ providedIn: 'root' })

@@ -10,6 +10,6 @@ export interface Meal {
   id: string;
   name: string;
   categories: string[];
-  mealUsage?: MealUsage; // ancien repas = considéré comme both
+  mealUsage?: MealUsage; 
   ingredients?: Ingredient[];
 }

@@ -6,9 +6,7 @@
     </div>
 
     @if (!showForm) {
-      <button class="primary-button" type="button" (click)="openForm()">
-        Ajouter un plat
-      </button>
+      <button class="primary-button" type="button" (click)="openForm()">Ajouter un plat</button>
     }
   </div>
 
@@ -20,16 +18,29 @@
     />
   }
 
-  <section class="filter-section">
-    <label for="category-filter">Filtrer par catégorie</label>
+  <section class="filters-section">
+    <div class="filter-section">
+      <label for="category-filter">Filtrer par catégorie</label>
 
-    <select id="category-filter" [(ngModel)]="selectedCategoryFilter">
-      <option value="">Toutes les catégories</option>
+      <select id="category-filter" [(ngModel)]="selectedCategoryFilter">
+        <option value="">Toutes les catégories</option>
 
-      @for (category of categories; track category.name) {
-        <option [value]="category.name">{{ category.name }}</option>
-      }
-    </select>
+        @for (category of categories; track category.name) {
+          <option [value]="category.name">{{ category.name }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="filter-section">
+      <label for="usage-filter">Filtrer par utilisation</label>
+
+      <select id="usage-filter" [(ngModel)]="selectedMealUsageFilter">
+        <option value="">Toutes les utilisations</option>
+        <option value="dinner">Dîners disponibles</option>
+        <option value="supper">Soupers disponibles</option>
+        <option value="both">Dîner et souper seulement</option>
+      </select>
+    </div>
   </section>
 
   <div class="meals-list">
