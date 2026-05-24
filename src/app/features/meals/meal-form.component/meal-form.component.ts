@@ -24,6 +24,8 @@ export class MealFormComponent {
   categoryInput = '';
   categories: string[] = [];
 
+  mealUsage: 'dinner' | 'supper' | 'both' = 'both';
+
   showIngredients = false;
 
   ingredientName = '';
@@ -145,6 +147,7 @@ export class MealFormComponent {
       name: this.name.trim(),
       categories: this.categories,
       ingredients: this.ingredients,
+      mealUsage: this.mealUsage,
     };
 
     await this.mealService.add(meal);

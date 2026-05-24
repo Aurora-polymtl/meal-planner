@@ -7,6 +7,16 @@
     }
   </div>
 
+  <div class="field-group">
+    <label for="meal-usage">Utilisation</label>
+
+    <select id="meal-usage" [(ngModel)]="mealUsage">
+      <option value="both">Dîner et souper</option>
+      <option value="dinner">Dîner seulement</option>
+      <option value="supper">Souper seulement</option>
+    </select>
+  </div>
+
   <section class="category-section">
     <div class="field-group">
       <label for="category-input">Catégories</label>

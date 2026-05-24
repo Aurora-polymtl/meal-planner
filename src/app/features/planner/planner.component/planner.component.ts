@@ -37,6 +37,8 @@ export class PlannerComponent {
   isGenerating = false;
   isConfirming = false;
 
+  repeatRestriction: 'none' | 'week' | 'twoWeeks' = 'none';
+
   constructor(
     private plannerService: PlannerService,
     private mealService: MealService,
@@ -107,6 +109,7 @@ export class PlannerComponent {
         numberOfDays: this.numberOfDays,
         generateDinner: this.generateDinner,
         generateSupper: this.generateSupper,
+        repeatRestriction: this.repeatRestriction,
       });
     } catch (error) {
       this.previewPlan = null;

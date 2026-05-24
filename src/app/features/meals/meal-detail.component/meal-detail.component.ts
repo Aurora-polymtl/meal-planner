@@ -27,6 +27,8 @@ export class MealDetailComponent {
   editIngredientQuantity = '';
   editIngredientUnit = 'unité';
 
+  mealUsage: 'dinner' | 'supper' | 'both' = 'both';
+
   units = [
     'g',
     'kg',

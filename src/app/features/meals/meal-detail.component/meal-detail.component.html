@@ -15,6 +15,34 @@
 
     <div class="detail-scroll">
       <section class="detail-section">
+        <h3>Utilisation</h3>
+
+        @if (!editMode) {
+          <p class="readonly-value">
+            @if ((meal.mealUsage ?? 'both') === 'both') {
+              Dîner et souper
+            } @else if (meal.mealUsage === 'dinner') {
+              Dîner seulement
+            } @else {
+              Souper seulement
+            }
+          </p>
+        }
+
+        @if (editMode) {
+          <div class="field-group">
+            <label for="meal-usage">Type de repas</label>
+
+            <select id="meal-usage" [(ngModel)]="meal.mealUsage">
+              <option value="both">Dîner et souper</option>
+              <option value="dinner">Dîner seulement</option>
+              <option value="supper">Souper seulement</option>
+            </select>
+          </div>
+        }
+      </section>
+      
+      <section class="detail-section">
         <h3>Catégories</h3>
 
         <div class="chip-list">

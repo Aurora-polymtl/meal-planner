@@ -82,6 +82,16 @@
         </label>
       </div>
 
+      <div class="field-group">
+        <label for="repeat-restriction">Répétition des plats</label>
+
+        <select id="repeat-restriction" [(ngModel)]="repeatRestriction">
+          <option value="none">Permettre les répétitions</option>
+          <option value="week">Maximum une fois par semaine</option>
+          <option value="twoWeeks">Maximum une fois par deux semaines</option>
+        </select>
+      </div>
+
       @if (errorMessage) {
         <p class="error-message">{{ errorMessage }}</p>
       }

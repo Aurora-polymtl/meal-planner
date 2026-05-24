@@ -66,6 +66,15 @@
   font-size: 18px;
 }
 
+.readonly-value {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 12px;
+
+  background: rgba(0, 0, 0, 0.04);
+  font-weight: 500;
+}
+
 .chip-list {
   display: flex;
   flex-wrap: wrap;

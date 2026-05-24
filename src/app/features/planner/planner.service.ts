@@ -48,7 +48,7 @@ export class PlannerService {
     return {
       id: crypto.randomUUID(),
       startDate: options.startDate,
-      days: this.menuGenerator.generateDays(options, meals),
+      days: this.menuGenerator.generateDays(options, meals, await this.getPlans()),
     };
   }
 
