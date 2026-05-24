@@ -19,7 +19,7 @@ export class MenuGeneratorService {
     meals: Meal[],
     existingPlans: MealPlan[] = [],
   ): DayPlan[] {
-    const start = new Date(options.startDate);
+    const start = this.parseIsoDate(options.startDate);
     const numberOfDays = Math.max(1, Math.min(options.numberOfDays, 31));
     const generatedDays: DayPlan[] = [];
 
@@ -79,9 +79,7 @@ export class MenuGeneratorService {
     usedToday: Set<string>,
     options: MenuGenerationOptions,
   ): string {
-    const compatibleMeals = meals.filter((meal) =>
-      this.isCompatibleWithSlot(meal, slot),
-    );
+    const compatibleMeals = meals.filter((meal) => this.isCompatibleWithSlot(meal, slot));
 
     if (compatibleMeals.length === 0) {
       throw new Error(
@@ -132,7 +130,7 @@ export class MenuGeneratorService {
 
     const existingMealIds = existingPlans.flatMap((plan) =>
       plan.days.flatMap((day) => {
-        const dayDate = new Date(day.date);
+        const dayDate = this.parseIsoDate(day.date);
 
         if (!this.isDateInRestrictionWindow(dayDate, generationStart, options.repeatRestriction)) {
           return [];
@@ -147,7 +145,7 @@ export class MenuGeneratorService {
     );
 
     const generatedMealIds = generatedDays.flatMap((day) => {
-      const dayDate = new Date(day.date);
+      const dayDate = this.parseIsoDate(day.date);
 
       if (!this.isDateInRestrictionWindow(dayDate, generationStart, options.repeatRestriction)) {
         return [];
@@ -183,11 +181,11 @@ export class MenuGeneratorService {
   }
 
   private isDayBeingRegenerated(day: DayPlan, options: MenuGenerationOptions): boolean {
-    const start = new Date(options.startDate);
+    const start = this.parseIsoDate(options.startDate);
     const end = new Date(start);
     end.setDate(start.getDate() + options.numberOfDays - 1);
 
-    const dayDate = new Date(day.date);
+    const dayDate = this.parseIsoDate(day.date);
 
     if (dayDate < this.startOfDay(start) || dayDate > this.startOfDay(end)) {
       return false;
@@ -197,18 +195,41 @@ export class MenuGeneratorService {
   }
 
   private applyCategoryPriorities(meals: Meal[], date: Date): Meal[] {
-    const seasonalMatches = meals.filter((meal) =>
-      this.matchesSeasonPriority(meal, date),
+    const seasonCompatibleMeals = meals.filter((meal) => this.matchesSeasonPriority(meal, date));
+
+    const seasonCandidates = seasonCompatibleMeals.length > 0 ? seasonCompatibleMeals : meals;
+
+    const dayCompatibleMeals = seasonCandidates.filter((meal) => this.isAllowedForDay(meal, date));
+
+    const dayCandidates = dayCompatibleMeals.length > 0 ? dayCompatibleMeals : seasonCandidates;
+
+    const preferredDayCategory = this.getPreferredDayCategory(date);
+
+    const preferredMeals = dayCandidates.filter((meal) =>
+      meal.categories.includes(preferredDayCategory),
     );
 
-    const seasonCandidates = seasonalMatches.length > 0 ? seasonalMatches : meals;
+    return preferredMeals.length > 0 ? preferredMeals : dayCandidates;
+  }
 
-    const dayCategory = this.getPreferredDayCategory(date);
-    const dayMatches = seasonCandidates.filter((meal) =>
-      meal.categories.includes(dayCategory),
-    );
+  private isAllowedForDay(meal: Meal, date: Date): boolean {
+    const day = date.getDay();
 
-    return dayMatches.length > 0 ? dayMatches : seasonCandidates;
+    const isFriday = day === 5;
+    const isWeekend = day === 0 || day === 6;
+
+    const hasFridayCategory = meal.categories.includes('Vendredi');
+    const hasWeekendCategory = meal.categories.includes('Fin de semaine');
+
+    if (hasFridayCategory && !isFriday) {
+      return false;
+    }
+
+    if (hasWeekendCategory && !isWeekend) {
+      return false;
+    }
+
+    return true;
   }
 
   private getPreferredDayCategory(date: Date): 'Semaine' | 'Vendredi' | 'Fin de semaine' {
@@ -251,7 +272,16 @@ export class MenuGeneratorService {
     return d;
   }
 
+  private parseIsoDate(date: string): Date {
+    const [year, month, day] = date.split('-').map(Number);
+    return new Date(year, month - 1, day);
+  }
+
   private toIsoDate(date: Date): string {
-    return date.toISOString().split('T')[0];
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
   }
 }
