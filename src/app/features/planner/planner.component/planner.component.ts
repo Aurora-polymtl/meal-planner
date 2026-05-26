@@ -6,6 +6,9 @@ import { MealService } from '../../meals/meal.service';
 import { MealPlan } from '../../../models/meal-plan.model';
 import { Meal } from '../../../models/meal';
 import { MealDetailComponent } from '../../meals/meal-detail.component/meal-detail.component';
+import { CategoryService } from '../../meals/category.service';
+import { Category } from '../../../models/category';
+import { SlotCategoryConstraint } from '../menu-generator.service';
 
 @Component({
   selector: 'app-planner',
@@ -39,9 +42,15 @@ export class PlannerComponent {
 
   repeatRestriction: 'none' | 'week' | 'twoWeeks' = 'none';
 
+  categories: Category[] = [];
+  slotCategoryConstraints: Record<string, string> = {};
+
+  showConstraintCalendar = false;
+
   constructor(
     private plannerService: PlannerService,
     private mealService: MealService,
+    private categoryService: CategoryService,
     private cdr: ChangeDetectorRef,
   ) {}
 
@@ -51,7 +60,7 @@ export class PlannerComponent {
   }
 
   async loadData() {
-    await Promise.all([this.loadPlans(), this.loadMeals()]);
+    await Promise.all([this.loadPlans(), this.loadMeals(), this.loadCategories()]);
   }
 
   async loadPlans() {
@@ -60,6 +69,10 @@ export class PlannerComponent {
 
   async loadMeals() {
     this.meals = await this.mealService.getAll();
+  }
+
+  async loadCategories() {
+    this.categories = await this.categoryService.getAll();
   }
 
   previousWeek() {
@@ -80,6 +93,7 @@ export class PlannerComponent {
     this.showConflictConfirmation = false;
     this.startDate ||= this.toIsoDate(new Date());
     this.showGenerator = true;
+    this.showConstraintCalendar = false;
     this.cdr.detectChanges();
   }
 
@@ -90,7 +104,12 @@ export class PlannerComponent {
     this.previewPlan = null;
     this.showConflictConfirmation = false;
     this.showGenerator = false;
+    this.showConstraintCalendar = false;
     this.cdr.detectChanges();
+  }
+
+  toggleConstraintCalendar() {
+    this.showConstraintCalendar = !this.showConstraintCalendar;
   }
 
   async generatePlan() {
@@ -110,6 +129,7 @@ export class PlannerComponent {
         generateDinner: this.generateDinner,
         generateSupper: this.generateSupper,
         repeatRestriction: this.repeatRestriction,
+        categoryConstraints: this.getCategoryConstraints(),
       });
     } catch (error) {
       this.previewPlan = null;
@@ -222,10 +242,7 @@ export class PlannerComponent {
     return this.meals.find((meal) => meal.id === mealId)?.name ?? 'Repas introuvable';
   }
 
-  private getMealIdForDay(
-    date: Date,
-    type: 'dinnerMealId' | 'supperMealId',
-  ): string | null {
+  private getMealIdForDay(date: Date, type: 'dinnerMealId' | 'supperMealId'): string | null {
     const iso = this.toIsoDate(date);
 
     for (const plan of [...this.plans].reverse()) {
@@ -249,6 +266,59 @@ export class PlannerComponent {
   }
 
   private toIsoDate(date: Date): string {
-    return date.toISOString().split('T')[0];
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
+  }
+
+  getGeneratorDays(): Date[] {
+    if (!this.startDate) return [];
+
+    const start = this.parseIsoDate(this.startDate);
+    const numberOfDays = Math.max(1, Math.min(this.numberOfDays, 31));
+
+    return Array.from({ length: numberOfDays }, (_, index) => {
+      const day = new Date(start);
+      day.setDate(start.getDate() + index);
+      return day;
+    });
+  }
+
+  getSlotCategoryConstraint(date: Date, slot: 'dinner' | 'supper'): string {
+    return this.slotCategoryConstraints[this.getSlotKey(date, slot)] ?? '';
+  }
+
+  setSlotCategoryConstraint(date: Date, slot: 'dinner' | 'supper', category: string) {
+    const key = this.getSlotKey(date, slot);
+
+    if (!category) {
+      delete this.slotCategoryConstraints[key];
+      return;
+    }
+
+    this.slotCategoryConstraints[key] = category;
+  }
+
+  getCategoryConstraints(): SlotCategoryConstraint[] {
+    return Object.entries(this.slotCategoryConstraints).map(([key, category]) => {
+      const [date, slot] = key.split('|') as [string, 'dinner' | 'supper'];
+
+      return {
+        date,
+        slot,
+        category,
+      };
+    });
+  }
+
+  private getSlotKey(date: Date, slot: 'dinner' | 'supper'): string {
+    return `${this.toIsoDate(date)}|${slot}`;
+  }
+
+  private parseIsoDate(date: string): Date {
+    const [year, month, day] = date.split('-').map(Number);
+    return new Date(year, month - 1, day);
   }
 }

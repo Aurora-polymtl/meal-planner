@@ -290,6 +290,97 @@ select {
   margin-top: 4px;
 }
 
+.constraint-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.constraint-toggle {
+  width: 100%;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+
+  padding: 12px 14px;
+  border-radius: 12px;
+
+  background: rgba(0, 0, 0, 0.04);
+  color: var(--mat-sys-on-surface);
+}
+
+.constraint-calendar {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  padding: 14px;
+  border-radius: 14px;
+
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.constraint-header h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.constraint-header p {
+  margin: 4px 0 0;
+  opacity: 0.7;
+  font-size: 14px;
+}
+
+.constraint-days {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(150px, 1fr));
+  gap: 10px;
+
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.constraint-day {
+  min-width: 150px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  padding: 12px;
+  border-radius: 12px;
+
+  background: var(--mat-sys-surface-container);
+}
+
+.constraint-day header {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.constraint-day header strong {
+  text-transform: capitalize;
+}
+
+.constraint-day header span {
+  opacity: 0.7;
+}
+
+.constraint-slot {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.constraint-slot label {
+  font-size: 13px;
+  font-weight: 600;
+  opacity: 0.75;
+}
+
 .preview-card {
   display: flex;
   flex-direction: column;

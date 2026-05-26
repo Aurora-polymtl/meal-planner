@@ -92,6 +92,70 @@
         </select>
       </div>
 
+      <section class="constraint-panel">
+        <button class="constraint-toggle" type="button" (click)="toggleConstraintCalendar()">
+          <span>Catégories imposées</span>
+          <span>{{ showConstraintCalendar ? 'Masquer' : 'Afficher' }}</span>
+        </button>
+
+        @if (showConstraintCalendar && getGeneratorDays().length > 0) {
+          <div class="constraint-calendar">
+            <div class="constraint-header">
+              <h3>Catégories imposées</h3>
+              <p>
+                Optionnel. Choisis une catégorie pour forcer un type de plat à un emplacement
+                précis.
+              </p>
+            </div>
+
+            <div class="constraint-days">
+              @for (day of getGeneratorDays(); track day.toISOString()) {
+                <article class="constraint-day">
+                  <header>
+                    <strong>{{ day | date: 'EEE' }}</strong>
+                    <span>{{ day | date: 'dd/MM' }}</span>
+                  </header>
+
+                  @if (generateDinner) {
+                    <div class="constraint-slot">
+                      <label>Dîner</label>
+
+                      <select
+                        [ngModel]="getSlotCategoryConstraint(day, 'dinner')"
+                        (ngModelChange)="setSlotCategoryConstraint(day, 'dinner', $event)"
+                      >
+                        <option value="">Aucune</option>
+
+                        @for (category of categories; track category.name) {
+                          <option [value]="category.name">{{ category.name }}</option>
+                        }
+                      </select>
+                    </div>
+                  }
+
+                  @if (generateSupper) {
+                    <div class="constraint-slot">
+                      <label>Souper</label>
+
+                      <select
+                        [ngModel]="getSlotCategoryConstraint(day, 'supper')"
+                        (ngModelChange)="setSlotCategoryConstraint(day, 'supper', $event)"
+                      >
+                        <option value="">Aucune</option>
+
+                        @for (category of categories; track category.name) {
+                          <option [value]="category.name">{{ category.name }}</option>
+                        }
+                      </select>
+                    </div>
+                  }
+                </article>
+              }
+            </div>
+          </div>
+        }
+      </section>
+
       @if (errorMessage) {
         <p class="error-message">{{ errorMessage }}</p>
       }

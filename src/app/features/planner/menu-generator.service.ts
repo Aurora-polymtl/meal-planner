@@ -10,6 +10,13 @@ export interface MenuGenerationOptions {
   generateDinner: boolean;
   generateSupper: boolean;
   repeatRestriction: RepeatRestriction;
+  categoryConstraints?: SlotCategoryConstraint[];
+}
+
+export interface SlotCategoryConstraint {
+  date: string;
+  slot: 'dinner' | 'supper';
+  category: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -87,7 +94,21 @@ export class MenuGeneratorService {
       );
     }
 
-    const repeatValidMeals = compatibleMeals.filter((meal) => {
+    const requiredCategory = this.getRequiredCategory(date, slot, options);
+
+    const categoryValidMeals = requiredCategory
+      ? compatibleMeals.filter((meal) => meal.categories.includes(requiredCategory))
+      : compatibleMeals;
+
+    if (categoryValidMeals.length === 0) {
+      throw new Error(
+        `Aucun plat ne correspond à la catégorie "${requiredCategory}" pour ${
+          slot === 'dinner' ? 'le dîner' : 'le souper'
+        }.`,
+      );
+    }
+
+    const repeatValidMeals = categoryValidMeals.filter((meal) => {
       return (
         !usedToday.has(meal.id) &&
         this.respectsRepeatRestriction(
@@ -103,11 +124,17 @@ export class MenuGeneratorService {
 
     if (repeatValidMeals.length === 0) {
       throw new Error(
-        'Pas assez de plats différents pour respecter la règle de répétition sélectionnée.',
+        requiredCategory
+          ? `Aucun plat de la catégorie "${requiredCategory}" ne respecte les règles de répétition pour ${
+              slot === 'dinner' ? 'le dîner' : 'le souper'
+            }.`
+          : 'Pas assez de plats différents pour respecter la règle de répétition sélectionnée.',
       );
     }
 
-    const bestCandidates = this.applyCategoryPriorities(repeatValidMeals, date);
+    const bestCandidates = requiredCategory
+      ? repeatValidMeals
+      : this.applyCategoryPriorities(repeatValidMeals, date);
 
     return this.pickRandom(bestCandidates).id;
   }
@@ -283,5 +310,20 @@ export class MenuGeneratorService {
     const day = String(date.getDate()).padStart(2, '0');
 
     return `${year}-${month}-${day}`;
+  }
+
+  private getRequiredCategory(
+    date: Date,
+    slot: 'dinner' | 'supper',
+    options: MenuGenerationOptions,
+  ): string {
+    const dateIso = this.toIsoDate(date);
+
+    return (
+      options.categoryConstraints?.find(
+        (constraint) =>
+          constraint.date === dateIso && constraint.slot === slot && constraint.category,
+      )?.category ?? ''
+    );
   }
 }
