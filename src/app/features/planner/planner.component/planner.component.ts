@@ -9,6 +9,7 @@ import { MealDetailComponent } from '../../meals/meal-detail.component/meal-deta
 import { CategoryService } from '../../meals/category.service';
 import { Category } from '../../../models/category';
 import { SlotCategoryConstraint } from '../menu-generator.service';
+import { PlannerSettingsService } from '../planner-settings.service';
 
 @Component({
   selector: 'app-planner',
@@ -46,12 +47,14 @@ export class PlannerComponent {
   slotCategoryConstraints: Record<string, string> = {};
 
   showConstraintCalendar = false;
+  settingsSavedMessage = false;
 
   constructor(
     private plannerService: PlannerService,
     private mealService: MealService,
     private categoryService: CategoryService,
     private cdr: ChangeDetectorRef,
+    private plannerSettingsService: PlannerSettingsService,
   ) {}
 
   async ngOnInit() {
@@ -92,6 +95,7 @@ export class PlannerComponent {
     this.previewPlan = null;
     this.showConflictConfirmation = false;
     this.startDate ||= this.toIsoDate(new Date());
+    this.loadSavedGeneratorSettings();
     this.showGenerator = true;
     this.showConstraintCalendar = false;
     this.cdr.detectChanges();
@@ -320,5 +324,58 @@ export class PlannerComponent {
   private parseIsoDate(date: string): Date {
     const [year, month, day] = date.split('-').map(Number);
     return new Date(year, month - 1, day);
+  }
+
+  saveGeneratorSettings() {
+    this.plannerSettingsService.save({
+      numberOfDays: this.numberOfDays,
+      generateDinner: this.generateDinner,
+      generateSupper: this.generateSupper,
+      repeatRestriction: this.repeatRestriction,
+      slotCategoryConstraints: this.getSavedSlotCategoryConstraints(),
+    });
+
+    this.settingsSavedMessage = true;
+
+    setTimeout(() => {
+      this.settingsSavedMessage = false;
+      this.cdr.detectChanges();
+    }, 2500);
+  }
+
+  loadSavedGeneratorSettings() {
+    const settings = this.plannerSettingsService.load();
+
+    if (!settings) return;
+
+    this.numberOfDays = settings.numberOfDays;
+    this.generateDinner = settings.generateDinner;
+    this.generateSupper = settings.generateSupper;
+    this.repeatRestriction = settings.repeatRestriction;
+
+    this.slotCategoryConstraints = {};
+
+    for (const constraint of settings.slotCategoryConstraints) {
+      const day = this.getGeneratorDays()[constraint.dayIndex];
+
+      if (!day) continue;
+
+      this.setSlotCategoryConstraint(day, constraint.slot, constraint.category);
+    }
+  }
+
+  private getSavedSlotCategoryConstraints() {
+    return Object.entries(this.slotCategoryConstraints)
+      .map(([key, category]) => {
+        const [date, slot] = key.split('|') as [string, 'dinner' | 'supper'];
+        const dayIndex = this.getGeneratorDays().findIndex((day) => this.toIsoDate(day) === date);
+
+        return {
+          dayIndex,
+          slot,
+          category,
+        };
+      })
+      .filter((constraint) => constraint.dayIndex >= 0);
   }
 }

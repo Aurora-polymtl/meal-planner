@@ -248,11 +248,23 @@
           class="secondary-button"
           type="button"
           [disabled]="isGenerating || isConfirming"
+          (click)="saveGeneratorSettings()"
+        >
+          Sauvegarder paramètres
+        </button>
+
+        <button
+          class="secondary-button"
+          type="button"
+          [disabled]="isGenerating || isConfirming"
           (click)="closeGenerator()"
         >
           Annuler
         </button>
       </div>
+      @if (settingsSavedMessage) {
+        <p class="success-message">Paramètres sauvegardés.</p>
+      }
     </section>
   }
   @if (selectedMeal) {
