@@ -1,26 +1,36 @@
-<div class="tabs">
-  <button
-    class="tab"
-    [class.active]="tab === 'meals'"
-    (click)="tab = 'meals'"
-  >
-    Mes repas
-  </button>
+<div class="top-bar">
+  <div class="tabs">
+    <button
+      class="tab"
+      [class.active]="tab === 'meals'"
+      (click)="tab = 'meals'"
+    >
+      Mes repas
+    </button>
+
+    <button
+      class="tab"
+      [class.active]="tab === 'planner'"
+      (click)="tab = 'planner'"
+    >
+      Planification
+    </button>
+
+    <button
+      class="tab"
+      [class.active]="tab === 'categories'"
+      (click)="tab = 'categories'"
+    >
+      Catégories
+    </button>
+  </div>
 
   <button
-    class="tab"
-    [class.active]="tab === 'planner'"
-    (click)="tab = 'planner'"
+    class="logout-button"
+    (click)="logout()"
+    [disabled]="isLoggingOut"
   >
-    Planification
-  </button>
-
-  <button
-    class="tab"
-    [class.active]="tab === 'categories'"
-    (click)="tab = 'categories'"
-  >
-    Catégories
+    Déconnexion
   </button>
 </div>
 

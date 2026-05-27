@@ -1,9 +1,13 @@
+.top-bar {
+  display: flex;
+  align-items: stretch;
+  background: var(--mat-sys-surface);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+}
+
 .tabs {
   display: flex;
-  width: 100%;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
-
-  background: var(--mat-sys-surface);
+  flex: 1;
 }
 
 /* ===== TAB BUTTON ===== */
