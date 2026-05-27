@@ -170,11 +170,33 @@
                 <strong>{{ day.date | date: 'EEEE dd/MM' }}</strong>
 
                 @if (day.dinnerMealId) {
-                  <p><span>Dîner</span> {{ getMealNameById(day.dinnerMealId) }}</p>
+                  <div class="preview-meal-edit">
+                    <label>Dîner</label>
+
+                    <select
+                      [ngModel]="day.dinnerMealId"
+                      (ngModelChange)="updatePreviewMeal(day.date, 'dinner', $event)"
+                    >
+                      @for (meal of getMealsForSlot('dinner'); track meal.id) {
+                        <option [value]="meal.id">{{ meal.name }}</option>
+                      }
+                    </select>
+                  </div>
                 }
 
                 @if (day.supperMealId) {
-                  <p><span>Souper</span> {{ getMealNameById(day.supperMealId) }}</p>
+                  <div class="preview-meal-edit">
+                    <label>Souper</label>
+
+                    <select
+                      [ngModel]="day.supperMealId"
+                      (ngModelChange)="updatePreviewMeal(day.date, 'supper', $event)"
+                    >
+                      @for (meal of getMealsForSlot('supper'); track meal.id) {
+                        <option [value]="meal.id">{{ meal.name }}</option>
+                      }
+                    </select>
+                  </div>
                 }
               </div>
             }

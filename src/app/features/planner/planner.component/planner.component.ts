@@ -378,4 +378,31 @@ export class PlannerComponent {
       })
       .filter((constraint) => constraint.dayIndex >= 0);
   }
+
+  getMealsForSlot(slot: 'dinner' | 'supper'): Meal[] {
+    return this.meals.filter((meal) => {
+      const usage = meal.mealUsage ?? 'both';
+      return usage === 'both' || usage === slot;
+    });
+  }
+
+  updatePreviewMeal(dayDate: string, slot: 'dinner' | 'supper', mealId: string) {
+    if (!this.previewPlan) return;
+
+    this.previewPlan = {
+      ...this.previewPlan,
+      days: this.previewPlan.days.map((day) => {
+        if (day.date !== dayDate) return day;
+
+        return {
+          ...day,
+          dinnerMealId: slot === 'dinner' ? mealId : day.dinnerMealId,
+          supperMealId: slot === 'supper' ? mealId : day.supperMealId,
+        };
+      }),
+    };
+
+    this.showConflictConfirmation = false;
+    this.cdr.detectChanges();
+  }
 }

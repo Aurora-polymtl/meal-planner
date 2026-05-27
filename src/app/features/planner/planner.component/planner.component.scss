@@ -425,6 +425,20 @@ select {
   margin-right: 6px;
 }
 
+.preview-meal-edit {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  margin-top: 10px;
+}
+
+.preview-meal-edit label {
+  font-size: 13px;
+  font-weight: 600;
+  opacity: 0.75;
+}
+
 .conflict-warning {
   padding: 12px;
   border-radius: 12px;
