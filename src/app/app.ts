@@ -4,7 +4,8 @@ import { PlannerComponent } from './features/planner/planner.component/planner.c
 import { CategoryManagerComponent } from './features/meals/category-manager.component/category-manager.component';
 
 @Component({
-  selector: 'app-root',
+  selector: 'app-main',
+  standalone: true,
   imports: [MealListComponent, PlannerComponent, CategoryManagerComponent],
   templateUrl: './app.html',
   styleUrl: './app.scss',

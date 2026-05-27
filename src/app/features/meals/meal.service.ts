@@ -1,23 +1,50 @@
 import { Injectable } from '@angular/core';
-import { db } from '../../db/app.db';
+import {
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+  setDoc,
+} from 'firebase/firestore';
+import { firestore } from '../../firebase/firebase.config';
 import { Meal } from '../../models/meal';
+import { AuthService } from '../auth/auth.service.ts';
 
 @Injectable({ providedIn: 'root' })
 export class MealService {
+  constructor(private authService: AuthService) {}
 
-  getAll() {
-    return db.meals.toArray();
+  async getAll(): Promise<Meal[]> {
+    const user = await this.authService.getCurrentUser();
+    const mealsRef = collection(firestore, `users/${user.uid}/meals`);
+    const snapshot = await getDocs(mealsRef);
+
+    return snapshot.docs.map((docSnap) => docSnap.data() as Meal);
   }
 
-  add(meal: Meal) {
-    return db.meals.add(meal);
+  async add(meal: Meal): Promise<void> {
+    const user = await this.authService.getCurrentUser();
+
+    const mealWithId: Meal = {
+      ...meal,
+      id: meal.id || crypto.randomUUID(),
+    };
+
+    const mealRef = doc(firestore, `users/${user.uid}/meals/${mealWithId.id}`);
+    await setDoc(mealRef, mealWithId);
   }
 
-  delete(id: string) {
-    return db.meals.delete(id);
+  async delete(id: string): Promise<void> {
+    const user = await this.authService.getCurrentUser();
+    const mealRef = doc(firestore, `users/${user.uid}/meals/${id}`);
+
+    await deleteDoc(mealRef);
   }
 
-  update(meal: Meal) {
-    return db.meals.put(meal);
+  async update(meal: Meal): Promise<void> {
+    const user = await this.authService.getCurrentUser();
+    const mealRef = doc(firestore, `users/${user.uid}/meals/${meal.id}`);
+
+    await setDoc(mealRef, meal);
   }
 }

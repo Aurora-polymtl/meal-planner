@@ -1,33 +1,60 @@
 import { Injectable } from '@angular/core';
-import { db } from '../../db/app.db';
+import {
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+  setDoc,
+} from 'firebase/firestore';
+import { firestore } from '../../firebase/firebase.config';
 import { MealPlan } from '../../models/meal-plan.model';
 import { MealService } from '../meals/meal.service';
 import {
   MenuGenerationOptions,
   MenuGeneratorService,
 } from './menu-generator.service';
+import { AuthService } from '../auth/auth.service.ts';
 
 @Injectable({ providedIn: 'root' })
 export class PlannerService {
   constructor(
     private mealService: MealService,
     private menuGenerator: MenuGeneratorService,
+    private authService: AuthService,
   ) {}
 
-  getPlans() {
-    return db.plans.toArray();
+  async getPlans(): Promise<MealPlan[]> {
+    const user = await this.authService.getCurrentUser();
+    const plansRef = collection(firestore, `users/${user.uid}/mealPlans`);
+    const snapshot = await getDocs(plansRef);
+
+    return snapshot.docs.map((docSnap) => docSnap.data() as MealPlan);
   }
 
-  addPlan(plan: MealPlan) {
-    return db.plans.add(plan);
+  async addPlan(plan: MealPlan): Promise<void> {
+    const user = await this.authService.getCurrentUser();
+
+    const planWithId: MealPlan = {
+      ...plan,
+      id: plan.id || crypto.randomUUID(),
+    };
+
+    const planRef = doc(firestore, `users/${user.uid}/mealPlans/${planWithId.id}`);
+    await setDoc(planRef, planWithId);
   }
 
-  updatePlan(plan: MealPlan) {
-    return db.plans.put(plan);
+  async updatePlan(plan: MealPlan): Promise<void> {
+    const user = await this.authService.getCurrentUser();
+    const planRef = doc(firestore, `users/${user.uid}/mealPlans/${plan.id}`);
+
+    await setDoc(planRef, plan);
   }
 
-  deletePlan(id: string) {
-    return db.plans.delete(id);
+  async deletePlan(id: string): Promise<void> {
+    const user = await this.authService.getCurrentUser();
+    const planRef = doc(firestore, `users/${user.uid}/mealPlans/${id}`);
+
+    await deleteDoc(planRef);
   }
 
   async generatePlanPreview(options: MenuGenerationOptions): Promise<MealPlan> {
@@ -72,7 +99,7 @@ export class PlannerService {
     );
   }
 
-  async confirmPlan(plan: MealPlan, overwriteConflicts = false) {
+  async confirmPlan(plan: MealPlan, overwriteConflicts = false): Promise<void> {
     const hasConflicts = await this.hasConflicts(plan);
 
     if (hasConflicts && !overwriteConflicts) {
@@ -86,7 +113,7 @@ export class PlannerService {
     await this.addPlan(plan);
   }
 
-  private async clearConflictingMeals(newPlan: MealPlan) {
+  private async clearConflictingMeals(newPlan: MealPlan): Promise<void> {
     const existingPlans = await this.getPlans();
 
     for (const existingPlan of existingPlans) {

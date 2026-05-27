@@ -326,8 +326,8 @@ export class PlannerComponent {
     return new Date(year, month - 1, day);
   }
 
-  saveGeneratorSettings() {
-    this.plannerSettingsService.save({
+  async saveGeneratorSettings() {
+    await this.plannerSettingsService.save({
       numberOfDays: this.numberOfDays,
       generateDinner: this.generateDinner,
       generateSupper: this.generateSupper,
@@ -343,8 +343,8 @@ export class PlannerComponent {
     }, 2500);
   }
 
-  loadSavedGeneratorSettings() {
-    const settings = this.plannerSettingsService.load();
+  async loadSavedGeneratorSettings() {
+    const settings = await this.plannerSettingsService.load();
 
     if (!settings) return;
 

@@ -12,5 +12,5 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     importProvidersFrom(FormsModule),
     { provide: LOCALE_ID, useValue: 'fr' },
-  ]
+  ],
 };

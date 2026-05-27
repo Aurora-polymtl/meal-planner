@@ -1,6 +1,20 @@
 import { Routes } from '@angular/router';
-import { MealListComponent } from './features/meals/meal-list.component/meal-list.component';
+import { App } from './app';
+import { LoginComponent } from './features/auth/login/login.component';
+import { authGuard } from './features/auth/auth.guard';
 
 export const routes: Routes = [
-    { path: '', component: MealListComponent }
+  {
+    path: 'login',
+    component: LoginComponent,
+  },
+  {
+    path: '',
+    component: App,
+    canActivate: [authGuard],
+  },
+  {
+    path: '**',
+    redirectTo: '',
+  },
 ];

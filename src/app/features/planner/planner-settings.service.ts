@@ -1,4 +1,7 @@
 import { Injectable } from '@angular/core';
+import { deleteDoc, doc, getDoc, setDoc } from 'firebase/firestore';
+import { firestore } from '../../firebase/firebase.config';
+import { AuthService } from '../auth/auth.service.ts';
 import { RepeatRestriction } from './menu-generator.service';
 
 export interface SavedSlotCategoryConstraint {
@@ -15,27 +18,33 @@ export interface PlannerGeneratorSettings {
   slotCategoryConstraints: SavedSlotCategoryConstraint[];
 }
 
-const STORAGE_KEY = 'planner-generator-settings';
-
 @Injectable({ providedIn: 'root' })
 export class PlannerSettingsService {
-  save(settings: PlannerGeneratorSettings) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
+  constructor(private authService: AuthService) {}
+
+  async save(settings: PlannerGeneratorSettings): Promise<void> {
+    const user = await this.authService.getCurrentUser();
+    const settingsRef = doc(firestore, `users/${user.uid}/settings/generator`);
+
+    await setDoc(settingsRef, settings);
   }
 
-  load(): PlannerGeneratorSettings | null {
-    const raw = localStorage.getItem(STORAGE_KEY);
+  async load(): Promise<PlannerGeneratorSettings | null> {
+    const user = await this.authService.getCurrentUser();
+    const settingsRef = doc(firestore, `users/${user.uid}/settings/generator`);
+    const snapshot = await getDoc(settingsRef);
 
-    if (!raw) return null;
-
-    try {
-      return JSON.parse(raw) as PlannerGeneratorSettings;
-    } catch {
+    if (!snapshot.exists()) {
       return null;
     }
+
+    return snapshot.data() as PlannerGeneratorSettings;
   }
 
-  clear() {
-    localStorage.removeItem(STORAGE_KEY);
+  async clear(): Promise<void> {
+    const user = await this.authService.getCurrentUser();
+    const settingsRef = doc(firestore, `users/${user.uid}/settings/generator`);
+
+    await deleteDoc(settingsRef);
   }
 }

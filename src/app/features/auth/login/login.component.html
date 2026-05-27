@@ -1,0 +1,43 @@
+<div class="login-page">
+  <form class="login-card" (ngSubmit)="submit()">
+    <h1>Meal Planner</h1>
+
+    <p class="subtitle">
+      {{ isRegisterMode ? 'Créer un compte' : 'Connexion' }}
+    </p>
+
+    <label>
+      Courriel
+      <input
+        type="email"
+        name="email"
+        [(ngModel)]="email"
+        required
+        autocomplete="email"
+      />
+    </label>
+
+    <label>
+      Mot de passe
+      <input
+        type="password"
+        name="password"
+        [(ngModel)]="password"
+        required
+        autocomplete="current-password"
+      />
+    </label>
+
+    @if (errorMessage) {
+      <p class="error">{{ errorMessage }}</p>
+    }
+
+    <button type="submit" [disabled]="loading">
+      {{ loading ? 'Chargement...' : isRegisterMode ? 'Créer le compte' : 'Se connecter' }}
+    </button>
+
+    <button type="button" class="secondary-button" (click)="toggleMode()">
+      {{ isRegisterMode ? 'J’ai déjà un compte' : 'Créer un compte' }}
+    </button>
+  </form>
+</div>
