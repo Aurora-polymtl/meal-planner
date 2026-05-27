@@ -1,37 +1,16 @@
 <div class="top-bar">
   <div class="tabs">
-    <button
-      class="tab"
-      [class.active]="tab === 'meals'"
-      (click)="tab = 'meals'"
-    >
-      Mes repas
-    </button>
-
-    <button
-      class="tab"
-      [class.active]="tab === 'planner'"
-      (click)="tab = 'planner'"
-    >
-      Planification
-    </button>
-
-    <button
-      class="tab"
-      [class.active]="tab === 'categories'"
-      (click)="tab = 'categories'"
-    >
+    <button class="tab" [class.active]="tab === 'categories'" (click)="tab = 'categories'">
       Catégories
+    </button>
+    <button class="tab" [class.active]="tab === 'meals'" (click)="tab = 'meals'">Mes repas</button>
+
+    <button class="tab" [class.active]="tab === 'planner'" (click)="tab = 'planner'">
+      Planification
     </button>
   </div>
 
-  <button
-    class="logout-button"
-    (click)="logout()"
-    [disabled]="isLoggingOut"
-  >
-    Déconnexion
-  </button>
+  <button class="logout-button" (click)="logout()" [disabled]="isLoggingOut">Déconnexion</button>
 </div>
 
 @if (tab === 'meals') {
