@@ -36,21 +36,26 @@ export class MealListComponent implements OnInit {
   }
 
   get filteredMeals() {
-  return this.meals.filter((meal) => {
-    const matchesCategory =
-      !this.selectedCategoryFilter ||
-      meal.categories.includes(this.selectedCategoryFilter);
+    return this.meals
+      .filter((meal) => {
+        const matchesCategory =
+          !this.selectedCategoryFilter || meal.categories.includes(this.selectedCategoryFilter);
 
-    const usage = meal.mealUsage ?? 'both';
+        const usage = meal.mealUsage ?? 'both';
 
-    const matchesUsage =
-      !this.selectedMealUsageFilter ||
-      usage === this.selectedMealUsageFilter ||
-      usage === 'both';
+        const matchesUsage =
+          !this.selectedMealUsageFilter ||
+          usage === this.selectedMealUsageFilter ||
+          usage === 'both';
 
-    return matchesCategory && matchesUsage;
-  });
-}
+        return matchesCategory && matchesUsage;
+      })
+      .sort((a, b) =>
+        a.name.localeCompare(b.name, 'fr', {
+          sensitivity: 'base',
+        }),
+      );
+  }
 
   async loadData() {
     await Promise.all([this.loadMeals(), this.loadCategories()]);
