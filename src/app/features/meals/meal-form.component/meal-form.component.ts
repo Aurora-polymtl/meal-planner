@@ -101,7 +101,7 @@ export class MealFormComponent {
 
     this.ingredients.push({
       name: this.ingredientName.trim(),
-      quantity: MealUtils.parseQuantity(this.ingredientQuantity),
+      quantity: Math.max(0, MealUtils.parseQuantity(this.ingredientQuantity)),
       unit: this.ingredientUnit,
     });
 

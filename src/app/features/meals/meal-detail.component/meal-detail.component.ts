@@ -100,7 +100,7 @@ export class MealDetailComponent {
       ...(this.meal.ingredients ?? []),
       {
         name,
-        quantity: MealUtils.parseQuantity(this.editIngredientQuantity),
+        quantity: Math.max(0, MealUtils.parseQuantity(this.editIngredientQuantity)),
         unit: this.editIngredientUnit,
       },
     ];

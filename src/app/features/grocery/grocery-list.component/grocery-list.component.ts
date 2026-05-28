@@ -65,7 +65,7 @@ export class GroceryListComponent implements OnInit {
   }
 
   updateIngredientQuantity(ingredient: GroceryIngredient, value: string | number) {
-    ingredient.quantity = MealUtils.parseQuantity(String(value));
+    ingredient.quantity = Math.max(0, MealUtils.parseQuantity(String(value)));
   }
 
   updateIngredientUnit(ingredient: GroceryIngredient, unit: string) {
@@ -161,7 +161,7 @@ export class GroceryListComponent implements OnInit {
           ...ingredient,
           name: ingredient.name.trim(),
           unit: ingredient.unit.trim(),
-          quantity: Number(ingredient.quantity) || 0,
+          quantity: Math.max(0, Number(ingredient.quantity) || 0),
         }))
         .filter((ingredient) => ingredient.name),
     }));
