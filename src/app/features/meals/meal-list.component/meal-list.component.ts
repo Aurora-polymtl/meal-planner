@@ -69,18 +69,22 @@ export class MealListComponent implements OnInit {
   openForm() {
     this.showForm = true;
     this.selectedMeal = null;
+    this.cdr.detectChanges();
   }
 
   closeForm() {
     this.showForm = false;
+    this.cdr.detectChanges();
   }
 
   openDetails(meal: Meal) {
     this.selectedMeal = structuredClone(meal);
+    this.cdr.detectChanges();
   }
 
   closeDetails() {
     this.selectedMeal = null;
+    this.cdr.detectChanges();
   }
 
   async deleteMeal(id: string) {

@@ -67,6 +67,8 @@ export class MealFormComponent {
     '5',
   ];
 
+  isSaving = false;
+
   constructor(
     private mealService: MealService,
     private validationService: MealValidationService,
@@ -135,24 +137,42 @@ export class MealFormComponent {
   }
 
   async addMeal() {
-    this.errors = this.validationService.validateMeal(
-      this.name,
-      this.categories,
-      [],
-    );
+    if (this.isSaving) return;
+
+    this.errors = this.validationService.validateMeal(this.name, this.categories, []);
 
     if (this.errors.name || this.errors.category) return;
 
-    const meal: Meal = {
-      id: generateId(),
-      name: this.name.trim(),
-      categories: this.categories,
-      ingredients: this.ingredients,
-      mealUsage: this.mealUsage,
-    };
+    this.isSaving = true;
 
-    await this.mealService.add(meal);
+    try {
+      const meal: Meal = {
+        id: generateId(),
+        name: this.name.trim(),
+        categories: [...this.categories],
+        ingredients: [...this.ingredients],
+        mealUsage: this.mealUsage,
+      };
 
-    this.saved.emit();
+      await this.mealService.add(meal);
+
+      this.resetForm();
+      this.saved.emit();
+    } finally {
+      this.isSaving = false;
+    }
+  }
+
+  private resetForm() {
+    this.name = '';
+    this.categoryInput = '';
+    this.categories = [];
+    this.mealUsage = 'both';
+    this.showIngredients = false;
+    this.ingredientName = '';
+    this.ingredientQuantity = '';
+    this.ingredientUnit = 'unité';
+    this.ingredients = [];
+    this.errors = {};
   }
 }

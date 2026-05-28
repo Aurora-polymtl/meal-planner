@@ -116,7 +116,9 @@
   </section>
 
   <div class="form-actions">
-    <button class="primary-button" type="button" (click)="addMeal()">Enregistrer</button>
+    <button class="primary-button" type="button" (click)="addMeal()" [disabled]="isSaving">
+      {{ isSaving ? 'Enregistrement...' : 'Enregistrer' }}
+    </button>
 
     <button class="secondary-button" type="button" (click)="closeForm()">Fermer</button>
   </div>
