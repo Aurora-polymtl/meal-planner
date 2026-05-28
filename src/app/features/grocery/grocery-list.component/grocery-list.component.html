@@ -1,0 +1,173 @@
+<section class="grocery-page">
+  <header class="page-header">
+    <div>
+      <h1>Liste d'épicerie</h1>
+
+      @if (selectedList) {
+        <p>Menu du {{ selectedList.startDate }}</p>
+      } @else {
+        <p>Aucune liste d'épicerie disponible.</p>
+      }
+    </div>
+
+    @if (selectedList && !isEditing) {
+      <button class="primary-button" type="button" (click)="startEditing()">Modifier</button>
+    }
+  </header>
+
+  @if (lists.length > 0) {
+    <div class="navigation">
+      <button type="button" (click)="previousList()" [disabled]="selectedIndex >= lists.length - 1">
+        Précédent
+      </button>
+
+      <select [(ngModel)]="selectedIndex" [disabled]="isEditing">
+        @for (list of lists; track list.id; let index = $index) {
+          <option [ngValue]="index">
+            {{ list.startDate }}
+          </option>
+        }
+      </select>
+
+      <button type="button" (click)="nextList()" [disabled]="selectedIndex <= 0">Suivant</button>
+    </div>
+  }
+
+  @if (errorMessage) {
+    <p class="error">{{ errorMessage }}</p>
+  }
+
+  @if (selectedList && !isEditing) {
+    <div class="view-toggle">
+      <button type="button" [class.active]="viewMode === 'byMeal'" (click)="viewMode = 'byMeal'">
+        Par plat
+      </button>
+
+      <button
+        type="button"
+        [class.active]="viewMode === 'combined'"
+        (click)="viewMode = 'combined'"
+      >
+        Combiné
+      </button>
+    </div>
+
+    @if (viewMode === 'byMeal') {
+      <div class="sections">
+        @for (section of selectedList.sections; track section.id) {
+          <article class="grocery-card">
+            <h2>{{ section.mealName }}</h2>
+            <p class="section-date">{{ section.date }} — {{ getSlotLabel(section.slot) }}</p>
+
+            @if (section.ingredients.length > 0) {
+              <ul>
+                @for (ingredient of section.ingredients; track ingredient.id) {
+                  <li>
+                    {{ ingredient.name }} —
+                    {{ ingredient.quantity }}
+                    {{ ingredient.unit }}
+                  </li>
+                }
+              </ul>
+            } @else {
+              <p class="empty">Aucun ingrédient pour ce plat.</p>
+            }
+          </article>
+        }
+      </div>
+    }
+
+    @if (viewMode === 'combined') {
+      <article class="grocery-card">
+        <h2>Ingrédients combinés</h2>
+
+        @if (getCombinedIngredients().length > 0) {
+          <ul>
+            @for (ingredient of getCombinedIngredients(); track ingredient.id) {
+              <li>
+                {{ ingredient.name }} —
+                {{ ingredient.quantity }}
+                {{ ingredient.unit }}
+              </li>
+            }
+          </ul>
+        } @else {
+          <p class="empty">Aucun ingrédient dans cette liste.</p>
+        }
+      </article>
+    }
+  }
+
+  @if (editableList && isEditing) {
+    <div class="edit-actions">
+      <button class="primary-button" type="button" (click)="saveEditing()">Sauvegarder</button>
+
+      <button class="secondary-button" type="button" (click)="cancelEditing()">Annuler</button>
+    </div>
+
+    <div class="sections">
+      @for (section of editableList.sections; track section.id) {
+        <article class="grocery-card">
+          <div class="section-header">
+            <div>
+              <h2>{{ section.mealName }}</h2>
+              <p class="section-date">{{ section.date }} — {{ getSlotLabel(section.slot) }}</p>
+            </div>
+
+            <button type="button" (click)="addIngredient(section.id)">Ajouter un ingrédient</button>
+          </div>
+
+          @if (section.ingredients.length > 0) {
+            <div class="ingredient-editor">
+              @for (ingredient of section.ingredients; track ingredient.id) {
+                <div class="ingredient-row">
+                  <input type="text" placeholder="Ingrédient" [(ngModel)]="ingredient.name" />
+
+                  @if (usesFractionalQuantity(ingredient.unit)) {
+                    <select
+                      [ngModel]="getQuantityValue(ingredient)"
+                      (ngModelChange)="updateIngredientQuantity(ingredient, $event)"
+                    >
+                      <option value="">Choisir</option>
+
+                      @for (quantity of fractionalQuantities; track quantity) {
+                        <option [value]="quantity">{{ quantity }}</option>
+                      }
+                    </select>
+                  } @else {
+                    <input
+                      type="number"
+                      placeholder="Quantité"
+                      min="0"
+                      [ngModel]="ingredient.quantity"
+                      (ngModelChange)="updateIngredientQuantity(ingredient, $event)"
+                    />
+                  }
+
+                  <select
+                    [ngModel]="ingredient.unit"
+                    (ngModelChange)="updateIngredientUnit(ingredient, $event)"
+                  >
+                    @for (unit of units; track unit) {
+                      <option [value]="unit">{{ unit }}</option>
+                    }
+                  </select>
+
+                  <button
+                    class="danger-button"
+                    type="button"
+                    (click)="deleteIngredient(section.id, ingredient.id)"
+                  >
+                    Supprimer
+                  </button>
+                </div>
+              }
+            </div>
+          } @else {
+            <p class="empty">Aucun ingrédient pour ce plat.</p>
+          }
+        </article>
+      }
+    </div>
+  }
+</section>

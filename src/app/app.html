@@ -1,16 +1,45 @@
 <div class="top-bar">
   <div class="tabs">
-    <button class="tab" [class.active]="tab === 'categories'" (click)="tab = 'categories'">
-      Catégories
+    <button
+      class="tab"
+      [class.active]="tab === 'meals'"
+      (click)="tab = 'meals'"
+    >
+      Mes repas
     </button>
-    <button class="tab" [class.active]="tab === 'meals'" (click)="tab = 'meals'">Mes repas</button>
 
-    <button class="tab" [class.active]="tab === 'planner'" (click)="tab = 'planner'">
+    <button
+      class="tab"
+      [class.active]="tab === 'planner'"
+      (click)="tab = 'planner'"
+    >
       Planification
+    </button>
+
+    <button
+      class="tab"
+      [class.active]="tab === 'grocery'"
+      (click)="tab = 'grocery'"
+    >
+      Liste d'épicerie
+    </button>
+
+    <button
+      class="tab"
+      [class.active]="tab === 'categories'"
+      (click)="tab = 'categories'"
+    >
+      Catégories
     </button>
   </div>
 
-  <button class="logout-button" (click)="logout()" [disabled]="isLoggingOut">Déconnexion</button>
+  <button
+    class="logout-button"
+    (click)="logout()"
+    [disabled]="isLoggingOut"
+  >
+    Déconnexion
+  </button>
 </div>
 
 @if (tab === 'meals') {
@@ -19,6 +48,10 @@
 
 @if (tab === 'planner') {
   <app-planner />
+}
+
+@if (tab === 'grocery') {
+  <app-grocery-list />
 }
 
 @if (tab === 'categories') {

@@ -14,6 +14,7 @@ import {
   MenuGeneratorService,
 } from './menu-generator.service';
 import { AuthService } from '../auth/auth.service.ts';
+import { GroceryListService } from '../grocery/grocery-list.service';
 
 @Injectable({ providedIn: 'root' })
 export class PlannerService {
@@ -21,6 +22,7 @@ export class PlannerService {
     private mealService: MealService,
     private menuGenerator: MenuGeneratorService,
     private authService: AuthService,
+    private groceryListService: GroceryListService,
   ) {}
 
   async getPlans(): Promise<MealPlan[]> {
@@ -111,6 +113,9 @@ export class PlannerService {
     }
 
     await this.addPlan(plan);
+
+    const meals = await this.mealService.getAll();
+    await this.groceryListService.createFromPlan(plan, meals);
   }
 
   private async clearConflictingMeals(newPlan: MealPlan): Promise<void> {
