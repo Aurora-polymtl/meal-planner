@@ -124,4 +124,38 @@ export class GroceryListService {
 
     return [...ingredientsByKey.values()].sort((a, b) => a.name.localeCompare(b.name));
   }
+
+  async updateMealSectionsFromMeal(meal: Meal): Promise<void> {
+    const lists = await this.getAll();
+
+    const updatedIngredients = (meal.ingredients ?? []).map((ingredient) => ({
+      id: generateId(),
+      name: ingredient.name,
+      quantity: ingredient.quantity,
+      unit: ingredient.unit,
+    }));
+
+    for (const list of lists) {
+      let changed = false;
+
+      const updatedSections = list.sections.map((section) => {
+        if (section.mealId !== meal.id) return section;
+
+        changed = true;
+
+        return {
+          ...section,
+          mealName: meal.name,
+          ingredients: structuredClone(updatedIngredients),
+        };
+      });
+
+      if (!changed) continue;
+
+      await this.save({
+        ...list,
+        sections: updatedSections,
+      });
+    }
+  }
 }

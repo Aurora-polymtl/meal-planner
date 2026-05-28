@@ -10,6 +10,7 @@ import {
   FRACTIONAL_QUANTITIES,
   FRACTIONAL_UNITS,
 } from '../../../core/constants/ingredient.constants';
+import { GroceryListService } from '../../grocery/grocery-list.service';
 
 @Component({
   selector: 'app-meal-detail',
@@ -40,6 +41,7 @@ export class MealDetailComponent {
 
   constructor(
     private mealService: MealService,
+    private groceryListService: GroceryListService,
     private quantityFormat: QuantityFormatService,
   ) {}
 
@@ -66,6 +68,8 @@ export class MealDetailComponent {
     this.meal.name = cleanName;
 
     await this.mealService.update(this.meal);
+    await this.groceryListService.updateMealSectionsFromMeal(this.meal);
+
     this.updated.emit();
     this.editMode = false;
   }
