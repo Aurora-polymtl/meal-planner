@@ -186,5 +186,36 @@ export class GroceryListComponent implements OnInit {
         }))
         .filter((ingredient) => ingredient.name),
     }));
+
+    this.editableList.commonItems = (this.editableList.commonItems ?? [])
+      .map((ingredient) => ({
+        ...ingredient,
+        name: ingredient.name.trim(),
+        unit: ingredient.unit.trim(),
+        quantity: Number(ingredient.quantity) || 0,
+      }))
+      .filter((ingredient) => ingredient.name);
+  }
+
+  addCommonItem() {
+    if (!this.editableList) return;
+
+    this.editableList.commonItems = [
+      ...(this.editableList.commonItems ?? []),
+      {
+        id: generateId(),
+        name: '',
+        quantity: 0,
+        unit: 'unité',
+      },
+    ];
+  }
+
+  deleteCommonItem(ingredientId: string) {
+    if (!this.editableList) return;
+
+    this.editableList.commonItems = (this.editableList.commonItems ?? []).filter(
+      (ingredient) => ingredient.id !== ingredientId,
+    );
   }
 }

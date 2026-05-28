@@ -65,6 +65,7 @@ export class GroceryListService {
       planId: plan.id,
       startDate: plan.startDate,
       sections,
+      commonItems: [],
       createdAt: new Date().toISOString(),
     };
 
@@ -90,27 +91,35 @@ export class GroceryListService {
   getCombinedIngredients(list: GroceryList): GroceryIngredient[] {
     const ingredientsByKey = new Map<string, GroceryIngredient>();
 
+    const addIngredient = (ingredient: GroceryIngredient) => {
+      const name = ingredient.name.trim();
+      const unit = ingredient.unit.trim();
+
+      if (!name) return;
+
+      const key = `${name.toLowerCase()}|${unit.toLowerCase()}`;
+      const existing = ingredientsByKey.get(key);
+
+      if (existing) {
+        existing.quantity += Number(ingredient.quantity) || 0;
+      } else {
+        ingredientsByKey.set(key, {
+          id: key,
+          name,
+          quantity: Number(ingredient.quantity) || 0,
+          unit,
+        });
+      }
+    };
+
     for (const section of list.sections) {
       for (const ingredient of section.ingredients) {
-        const name = ingredient.name.trim();
-        const unit = ingredient.unit.trim();
-
-        if (!name) continue;
-
-        const key = `${name.toLowerCase()}|${unit.toLowerCase()}`;
-        const existing = ingredientsByKey.get(key);
-
-        if (existing) {
-          existing.quantity += Number(ingredient.quantity) || 0;
-        } else {
-          ingredientsByKey.set(key, {
-            id: key,
-            name,
-            quantity: Number(ingredient.quantity) || 0,
-            unit,
-          });
-        }
+        addIngredient(ingredient);
       }
+    }
+
+    for (const ingredient of list.commonItems ?? []) {
+      addIngredient(ingredient);
     }
 
     return [...ingredientsByKey.values()].sort((a, b) => a.name.localeCompare(b.name));

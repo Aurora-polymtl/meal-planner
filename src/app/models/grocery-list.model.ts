@@ -3,6 +3,7 @@ export interface GroceryList {
   planId: string;
   startDate: string;
   sections: GroceryMealSection[];
+  commonItems?: GroceryIngredient[];
   createdAt: string;
 }
 

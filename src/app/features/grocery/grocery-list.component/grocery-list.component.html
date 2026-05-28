@@ -74,6 +74,22 @@
             }
           </article>
         }
+        @if ((selectedList.commonItems ?? []).length > 0) {
+          <article class="grocery-card">
+            <h2>Items communs</h2>
+            <p class="section-date">Ajouts manuels</p>
+
+            <ul>
+              @for (ingredient of selectedList.commonItems ?? []; track ingredient.id) {
+                <li>
+                  {{ ingredient.name }} —
+                  {{ ingredient.quantity }}
+                  {{ ingredient.unit }}
+                </li>
+              }
+            </ul>
+          </article>
+        }
       </div>
     }
 
@@ -106,6 +122,66 @@
     </div>
 
     <div class="sections">
+      <article class="grocery-card common-items-card">
+        <div class="section-header">
+          <div>
+            <h2>Items communs</h2>
+            <p class="section-date">Lait, biscuits, collations, etc.</p>
+          </div>
+
+          <button type="button" (click)="addCommonItem()">Ajouter un item</button>
+        </div>
+
+        @if ((editableList.commonItems ?? []).length > 0) {
+          <div class="ingredient-editor">
+            @for (ingredient of editableList.commonItems ?? []; track ingredient.id) {
+              <div class="ingredient-row">
+                <input type="text" placeholder="Item" [(ngModel)]="ingredient.name" />
+
+                @if (usesFractionalQuantity(ingredient.unit)) {
+                  <select
+                    [ngModel]="getQuantityValue(ingredient)"
+                    (ngModelChange)="updateIngredientQuantity(ingredient, $event)"
+                  >
+                    <option value="">Choisir</option>
+
+                    @for (quantity of fractionalQuantities; track quantity) {
+                      <option [value]="quantity">{{ quantity }}</option>
+                    }
+                  </select>
+                } @else {
+                  <input
+                    type="number"
+                    placeholder="Quantité"
+                    min="0"
+                    [ngModel]="ingredient.quantity"
+                    (ngModelChange)="updateIngredientQuantity(ingredient, $event)"
+                  />
+                }
+
+                <select
+                  [ngModel]="ingredient.unit"
+                  (ngModelChange)="updateIngredientUnit(ingredient, $event)"
+                >
+                  @for (unit of units; track unit) {
+                    <option [value]="unit">{{ unit }}</option>
+                  }
+                </select>
+
+                <button
+                  class="danger-button"
+                  type="button"
+                  (click)="deleteCommonItem(ingredient.id)"
+                >
+                  Supprimer
+                </button>
+              </div>
+            }
+          </div>
+        } @else {
+          <p class="empty">Aucun item commun ajouté.</p>
+        }
+      </article>
       @for (section of editableList.sections; track section.id) {
         <article class="grocery-card">
           <div class="section-header">
