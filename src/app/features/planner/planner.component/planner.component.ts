@@ -8,7 +8,7 @@ import { Meal } from '../../../models/meal';
 import { MealDetailComponent } from '../../meals/meal-detail.component/meal-detail.component';
 import { CategoryService } from '../../meals/category.service';
 import { Category } from '../../../models/category';
-import { SlotCategoryConstraint } from '../menu-generator.service';
+import { SlotCategoryConstraint, SlotGenerationSelection } from '../menu-generator.service';
 import { PlannerSettingsService } from '../planner-settings.service';
 
 @Component({
@@ -45,6 +45,7 @@ export class PlannerComponent {
 
   categories: Category[] = [];
   slotCategoryConstraints: Record<string, string> = {};
+  slotGenerationSelections: Record<string, boolean> = {};
 
   showConstraintCalendar = false;
   settingsSavedMessage = false;
@@ -124,6 +125,13 @@ export class PlannerComponent {
     this.isGenerating = true;
     this.cdr.detectChanges();
 
+    if (!this.hasSelectedMealSlots()) {
+      this.errorMessage = 'Choisis au moins un dîner ou un souper à générer.';
+      this.isGenerating = false;
+      this.cdr.detectChanges();
+      return;
+    }
+
     try {
       await this.loadMeals();
 
@@ -134,6 +142,7 @@ export class PlannerComponent {
         generateSupper: this.generateSupper,
         repeatRestriction: this.repeatRestriction,
         categoryConstraints: this.getCategoryConstraints(),
+        slotSelections: this.getSlotGenerationSelections(),
       });
     } catch (error) {
       this.previewPlan = null;
@@ -333,6 +342,7 @@ export class PlannerComponent {
       generateSupper: this.generateSupper,
       repeatRestriction: this.repeatRestriction,
       slotCategoryConstraints: this.getSavedSlotCategoryConstraints(),
+      slotGenerationSelections: this.getSavedSlotGenerationSelections(),
     });
 
     this.settingsSavedMessage = true;
@@ -362,6 +372,16 @@ export class PlannerComponent {
 
       this.setSlotCategoryConstraint(day, constraint.slot, constraint.category);
     }
+
+    this.slotGenerationSelections = {};
+
+    for (const selection of settings.slotGenerationSelections ?? []) {
+      const day = this.getGeneratorDays()[selection.dayIndex];
+
+      if (!day) continue;
+
+      this.setSlotGenerationSelection(day, selection.slot, selection.enabled);
+    }
   }
 
   private getSavedSlotCategoryConstraints() {
@@ -377,6 +397,22 @@ export class PlannerComponent {
         };
       })
       .filter((constraint) => constraint.dayIndex >= 0);
+  }
+
+  private getSavedSlotGenerationSelections() {
+    return this.getSlotGenerationSelections()
+      .map((selection) => {
+        const dayIndex = this.getGeneratorDays().findIndex(
+          (day) => this.toIsoDate(day) === selection.date,
+        );
+
+        return {
+          dayIndex,
+          slot: selection.slot,
+          enabled: selection.enabled,
+        };
+      })
+      .filter((selection) => selection.dayIndex >= 0);
   }
 
   getMealsForSlot(slot: 'dinner' | 'supper'): Meal[] {
@@ -404,5 +440,43 @@ export class PlannerComponent {
 
     this.showConflictConfirmation = false;
     this.cdr.detectChanges();
+  }
+
+  getSlotGenerationSelection(date: Date, slot: 'dinner' | 'supper'): boolean {
+    const key = this.getSlotKey(date, slot);
+
+    if (key in this.slotGenerationSelections) {
+      return this.slotGenerationSelections[key];
+    }
+
+    return slot === 'dinner' ? this.generateDinner : this.generateSupper;
+  }
+
+  setSlotGenerationSelection(date: Date, slot: 'dinner' | 'supper', enabled: boolean) {
+    const key = this.getSlotKey(date, slot);
+    this.slotGenerationSelections[key] = enabled;
+
+    if (!enabled) {
+      this.setSlotCategoryConstraint(date, slot, '');
+    }
+  }
+
+  getSlotGenerationSelections(): SlotGenerationSelection[] {
+    return this.getGeneratorDays().flatMap((date) => [
+      {
+        date: this.toIsoDate(date),
+        slot: 'dinner' as const,
+        enabled: this.getSlotGenerationSelection(date, 'dinner'),
+      },
+      {
+        date: this.toIsoDate(date),
+        slot: 'supper' as const,
+        enabled: this.getSlotGenerationSelection(date, 'supper'),
+      },
+    ]);
+  }
+
+  hasSelectedMealSlots(): boolean {
+    return this.getSlotGenerationSelections().some((selection) => selection.enabled);
   }
 }

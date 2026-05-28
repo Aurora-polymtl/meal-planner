@@ -11,12 +11,19 @@ export interface MenuGenerationOptions {
   generateSupper: boolean;
   repeatRestriction: RepeatRestriction;
   categoryConstraints?: SlotCategoryConstraint[];
+  slotSelections?: SlotGenerationSelection[];
 }
 
 export interface SlotCategoryConstraint {
   date: string;
   slot: 'dinner' | 'supper';
   category: string;
+}
+
+export interface SlotGenerationSelection {
+  date: string;
+  slot: 'dinner' | 'supper';
+  enabled: boolean;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -36,7 +43,7 @@ export class MenuGeneratorService {
 
       const usedToday = new Set<string>();
 
-      const dinnerMealId = options.generateDinner
+      const dinnerMealId = this.shouldGenerateSlot(date, 'dinner', options)
         ? this.pickMealId(
             'dinner',
             date,
@@ -53,7 +60,7 @@ export class MenuGeneratorService {
         usedToday.add(dinnerMealId);
       }
 
-      const supperMealId = options.generateSupper
+      const supperMealId = this.shouldGenerateSlot(date, 'supper', options)
         ? this.pickMealId(
             'supper',
             date,
@@ -74,6 +81,24 @@ export class MenuGeneratorService {
     }
 
     return generatedDays;
+  }
+
+  private shouldGenerateSlot(
+    date: Date,
+    slot: 'dinner' | 'supper',
+    options: MenuGenerationOptions,
+  ): boolean {
+    const dateIso = this.toIsoDate(date);
+
+    const selection = options.slotSelections?.find(
+      (slotSelection) => slotSelection.date === dateIso && slotSelection.slot === slot,
+    );
+
+    if (selection) {
+      return selection.enabled;
+    }
+
+    return slot === 'dinner' ? options.generateDinner : options.generateSupper;
   }
 
   private pickMealId(

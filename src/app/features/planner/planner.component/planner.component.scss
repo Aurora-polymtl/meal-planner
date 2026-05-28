@@ -477,6 +477,69 @@ button:disabled {
   color: #16a34a;
 }
 
+.slot-selection-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  padding: 14px;
+  border-radius: 14px;
+
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.slot-selection-days {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(120px, 1fr));
+  gap: 10px;
+
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.slot-selection-day {
+  min-width: 120px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  padding: 10px;
+  border-radius: 12px;
+
+  background: var(--mat-sys-surface-container);
+}
+
+.slot-selection-day header {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.slot-selection-day header strong {
+  text-transform: capitalize;
+}
+
+.slot-selection-day header span {
+  opacity: 0.7;
+}
+
+.mini-checkbox-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.mini-checkbox-row input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--mat-sys-primary);
+}
+
 /* =========================
    MOBILE
    ========================= */
@@ -756,4 +819,38 @@ button:disabled {
   .success-message {
     font-size: 13px;
   }
+
+  .slot-selection-panel {
+  gap: 10px;
+  padding: 12px;
+  border-radius: 14px;
+}
+
+.slot-selection-days {
+  grid-template-columns: repeat(7, minmax(118px, 1fr));
+  gap: 8px;
+  scroll-snap-type: x proximity;
+}
+
+.slot-selection-day {
+  min-width: 118px;
+  gap: 8px;
+
+  padding: 10px;
+  border-radius: 12px;
+
+  scroll-snap-align: start;
+}
+
+.slot-selection-day header strong {
+  font-size: 13px;
+}
+
+.slot-selection-day header span {
+  font-size: 12px;
+}
+
+.mini-checkbox-row {
+  font-size: 12px;
+}
 }

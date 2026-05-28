@@ -80,6 +80,41 @@
           <span>Générer les soupers</span>
           <input type="checkbox" [(ngModel)]="generateSupper" />
         </label>
+        <section class="slot-selection-panel">
+          <div class="constraint-header">
+            <h3>Jours à générer</h3>
+            <p>Choisis précisément les dîners et soupers à inclure dans le menu.</p>
+          </div>
+
+          <div class="slot-selection-days">
+            @for (day of getGeneratorDays(); track day.toISOString()) {
+              <article class="slot-selection-day">
+                <header>
+                  <strong>{{ day | date: 'EEE' }}</strong>
+                  <span>{{ day | date: 'dd/MM' }}</span>
+                </header>
+
+                <label class="mini-checkbox-row">
+                  <span>Dîner</span>
+                  <input
+                    type="checkbox"
+                    [ngModel]="getSlotGenerationSelection(day, 'dinner')"
+                    (ngModelChange)="setSlotGenerationSelection(day, 'dinner', $event)"
+                  />
+                </label>
+
+                <label class="mini-checkbox-row">
+                  <span>Souper</span>
+                  <input
+                    type="checkbox"
+                    [ngModel]="getSlotGenerationSelection(day, 'supper')"
+                    (ngModelChange)="setSlotGenerationSelection(day, 'supper', $event)"
+                  />
+                </label>
+              </article>
+            }
+          </div>
+        </section>
       </div>
 
       <div class="field-group">
@@ -116,7 +151,7 @@
                     <span>{{ day | date: 'dd/MM' }}</span>
                   </header>
 
-                  @if (generateDinner) {
+                  @if (getSlotGenerationSelection(day, 'dinner')) {
                     <div class="constraint-slot">
                       <label>Dîner</label>
 
@@ -133,7 +168,7 @@
                     </div>
                   }
 
-                  @if (generateSupper) {
+                  @if (getSlotGenerationSelection(day, 'supper')) {
                     <div class="constraint-slot">
                       <label>Souper</label>
 

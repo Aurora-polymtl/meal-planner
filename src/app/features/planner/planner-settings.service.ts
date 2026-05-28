@@ -16,6 +16,13 @@ export interface PlannerGeneratorSettings {
   generateSupper: boolean;
   repeatRestriction: RepeatRestriction;
   slotCategoryConstraints: SavedSlotCategoryConstraint[];
+  slotGenerationSelections?: SavedSlotGenerationSelection[];
+}
+
+export interface SavedSlotGenerationSelection {
+  dayIndex: number;
+  slot: 'dinner' | 'supper';
+  enabled: boolean;
 }
 
 @Injectable({ providedIn: 'root' })
