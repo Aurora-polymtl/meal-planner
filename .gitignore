@@ -50,6 +50,7 @@ pnpm-debug.log*
 .DS_Store
 Thumbs.db
 src/app/firebase/firebase-secrets.ts
+.firebase/
 
 # =========================
 # ANGULAR LOCAL METADATA
