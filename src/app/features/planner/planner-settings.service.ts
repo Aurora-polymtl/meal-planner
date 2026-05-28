@@ -7,7 +7,7 @@ import { RepeatRestriction } from './menu-generator.service';
 export interface SavedSlotCategoryConstraint {
   dayIndex: number;
   slot: 'dinner' | 'supper';
-  category: string;
+  categories: string[];
 }
 
 export interface PlannerGeneratorSettings {

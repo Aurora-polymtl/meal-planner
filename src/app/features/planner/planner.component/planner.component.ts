@@ -44,11 +44,13 @@ export class PlannerComponent {
   repeatRestriction: 'none' | 'week' | 'twoWeeks' = 'none';
 
   categories: Category[] = [];
-  slotCategoryConstraints: Record<string, string> = {};
+  slotCategoryConstraints: Record<string, string[]> = {};
   slotGenerationSelections: Record<string, boolean> = {};
 
   showConstraintCalendar = false;
   settingsSavedMessage = false;
+
+  openCategoryConstraintSlots: Record<string, boolean> = {};
 
   constructor(
     private plannerService: PlannerService,
@@ -115,6 +117,29 @@ export class PlannerComponent {
 
   toggleConstraintCalendar() {
     this.showConstraintCalendar = !this.showConstraintCalendar;
+  }
+
+  isCategoryConstraintSlotOpen(date: Date, slot: 'dinner' | 'supper'): boolean {
+    return !!this.openCategoryConstraintSlots[this.getSlotKey(date, slot)];
+  }
+
+  toggleCategoryConstraintSlot(date: Date, slot: 'dinner' | 'supper') {
+    const key = this.getSlotKey(date, slot);
+    this.openCategoryConstraintSlots[key] = !this.openCategoryConstraintSlots[key];
+  }
+
+  getSelectedCategoryConstraintLabel(date: Date, slot: 'dinner' | 'supper'): string {
+    const selectedCategories = this.getSlotCategoryConstraints(date, slot);
+
+    if (selectedCategories.length === 0) {
+      return 'Aucune catégorie';
+    }
+
+    if (selectedCategories.length === 1) {
+      return selectedCategories[0];
+    }
+
+    return `${selectedCategories.length} catégories`;
   }
 
   async generatePlan() {
@@ -299,31 +324,49 @@ export class PlannerComponent {
     });
   }
 
-  getSlotCategoryConstraint(date: Date, slot: 'dinner' | 'supper'): string {
-    return this.slotCategoryConstraints[this.getSlotKey(date, slot)] ?? '';
+  getSlotCategoryConstraints(date: Date, slot: 'dinner' | 'supper'): string[] {
+    return this.slotCategoryConstraints[this.getSlotKey(date, slot)] ?? [];
   }
 
-  setSlotCategoryConstraint(date: Date, slot: 'dinner' | 'supper', category: string) {
+  toggleSlotCategoryConstraint(date: Date, slot: 'dinner' | 'supper', category: string) {
     const key = this.getSlotKey(date, slot);
+    const current = this.slotCategoryConstraints[key] ?? [];
 
-    if (!category) {
-      delete this.slotCategoryConstraints[key];
+    if (current.includes(category)) {
+      const updated = current.filter((c) => c !== category);
+
+      if (updated.length === 0) {
+        delete this.slotCategoryConstraints[key];
+      } else {
+        this.slotCategoryConstraints[key] = updated;
+      }
+
       return;
     }
 
-    this.slotCategoryConstraints[key] = category;
+    this.slotCategoryConstraints[key] = [...current, category];
+  }
+
+  hasSlotCategoryConstraint(date: Date, slot: 'dinner' | 'supper', category: string): boolean {
+    return this.getSlotCategoryConstraints(date, slot).includes(category);
+  }
+
+  clearSlotCategoryConstraints(date: Date, slot: 'dinner' | 'supper') {
+    delete this.slotCategoryConstraints[this.getSlotKey(date, slot)];
   }
 
   getCategoryConstraints(): SlotCategoryConstraint[] {
-    return Object.entries(this.slotCategoryConstraints).map(([key, category]) => {
-      const [date, slot] = key.split('|') as [string, 'dinner' | 'supper'];
+    return Object.entries(this.slotCategoryConstraints)
+      .map(([key, categories]) => {
+        const [date, slot] = key.split('|') as [string, 'dinner' | 'supper'];
 
-      return {
-        date,
-        slot,
-        category,
-      };
-    });
+        return {
+          date,
+          slot,
+          categories,
+        };
+      })
+      .filter((constraint) => constraint.categories.length > 0);
   }
 
   private getSlotKey(date: Date, slot: 'dinner' | 'supper'): string {
@@ -370,7 +413,8 @@ export class PlannerComponent {
 
       if (!day) continue;
 
-      this.setSlotCategoryConstraint(day, constraint.slot, constraint.category);
+      const key = this.getSlotKey(day, constraint.slot);
+      this.slotCategoryConstraints[key] = constraint.categories ?? [];
     }
 
     this.slotGenerationSelections = {};
@@ -386,17 +430,17 @@ export class PlannerComponent {
 
   private getSavedSlotCategoryConstraints() {
     return Object.entries(this.slotCategoryConstraints)
-      .map(([key, category]) => {
+      .map(([key, categories]) => {
         const [date, slot] = key.split('|') as [string, 'dinner' | 'supper'];
         const dayIndex = this.getGeneratorDays().findIndex((day) => this.toIsoDate(day) === date);
 
         return {
           dayIndex,
           slot,
-          category,
+          categories,
         };
       })
-      .filter((constraint) => constraint.dayIndex >= 0);
+      .filter((constraint) => constraint.dayIndex >= 0 && constraint.categories.length > 0);
   }
 
   private getSavedSlotGenerationSelections() {
@@ -457,7 +501,7 @@ export class PlannerComponent {
     this.slotGenerationSelections[key] = enabled;
 
     if (!enabled) {
-      this.setSlotCategoryConstraint(date, slot, '');
+      this.clearSlotCategoryConstraints(date, slot);
     }
   }
 

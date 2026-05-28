@@ -155,16 +155,33 @@
                     <div class="constraint-slot">
                       <label>Dîner</label>
 
-                      <select
-                        [ngModel]="getSlotCategoryConstraint(day, 'dinner')"
-                        (ngModelChange)="setSlotCategoryConstraint(day, 'dinner', $event)"
-                      >
-                        <option value="">Aucune</option>
+                      <div class="constraint-slot">
+                        <button
+                          class="category-slot-toggle"
+                          type="button"
+                          (click)="toggleCategoryConstraintSlot(day, 'dinner')"
+                        >
+                          <span>Dîner</span>
+                          <small>{{ getSelectedCategoryConstraintLabel(day, 'dinner') }}</small>
+                        </button>
 
-                        @for (category of categories; track category.name) {
-                          <option [value]="category.name">{{ category.name }}</option>
+                        @if (isCategoryConstraintSlotOpen(day, 'dinner')) {
+                          <div class="category-chip-picker">
+                            @for (category of categories; track category.name) {
+                              <button
+                                type="button"
+                                class="category-toggle"
+                                [class.selected]="
+                                  hasSlotCategoryConstraint(day, 'dinner', category.name)
+                                "
+                                (click)="toggleSlotCategoryConstraint(day, 'dinner', category.name)"
+                              >
+                                {{ category.name }}
+                              </button>
+                            }
+                          </div>
                         }
-                      </select>
+                      </div>
                     </div>
                   }
 
@@ -172,16 +189,33 @@
                     <div class="constraint-slot">
                       <label>Souper</label>
 
-                      <select
-                        [ngModel]="getSlotCategoryConstraint(day, 'supper')"
-                        (ngModelChange)="setSlotCategoryConstraint(day, 'supper', $event)"
-                      >
-                        <option value="">Aucune</option>
+                      <div class="constraint-slot">
+                        <button
+                          class="category-slot-toggle"
+                          type="button"
+                          (click)="toggleCategoryConstraintSlot(day, 'supper')"
+                        >
+                          <span>Souper</span>
+                          <small>{{ getSelectedCategoryConstraintLabel(day, 'supper') }}</small>
+                        </button>
 
-                        @for (category of categories; track category.name) {
-                          <option [value]="category.name">{{ category.name }}</option>
+                        @if (isCategoryConstraintSlotOpen(day, 'supper')) {
+                          <div class="category-chip-picker">
+                            @for (category of categories; track category.name) {
+                              <button
+                                type="button"
+                                class="category-toggle"
+                                [class.selected]="
+                                  hasSlotCategoryConstraint(day, 'supper', category.name)
+                                "
+                                (click)="toggleSlotCategoryConstraint(day, 'supper', category.name)"
+                              >
+                                {{ category.name }}
+                              </button>
+                            }
+                          </div>
                         }
-                      </select>
+                      </div>
                     </div>
                   }
                 </article>
