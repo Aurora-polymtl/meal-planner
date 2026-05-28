@@ -5,6 +5,11 @@ import { MealService } from '../meal.service';
 import { QuantityFormatService } from '../../../core/utils/quantity-format.service';
 import { MealUtils } from '../meal-utils';
 import { Category } from '../../../models/category';
+import {
+  INGREDIENT_UNITS,
+  FRACTIONAL_QUANTITIES,
+  FRACTIONAL_UNITS,
+} from '../../../core/constants/ingredient.constants';
 
 @Component({
   selector: 'app-meal-detail',
@@ -29,35 +34,9 @@ export class MealDetailComponent {
 
   mealUsage: 'dinner' | 'supper' | 'both' = 'both';
 
-  units = [
-    'g',
-    'kg',
-    'mL',
-    'L',
-    'tasse',
-    'cuillère à thé',
-    'cuillère à soupe',
-    'oz',
-    'lb',
-    'unité',
-  ];
-
-  fractionalUnits = ['tasse', 'cuillère à thé', 'cuillère à soupe'];
-
-  fractionalQuantities = [
-    '1/8',
-    '1/4',
-    '1/3',
-    '1/2',
-    '2/3',
-    '3/4',
-    '1',
-    '1 1/2',
-    '2',
-    '3',
-    '4',
-    '5',
-  ];
+  units = INGREDIENT_UNITS;
+  fractionalUnits = FRACTIONAL_UNITS;
+  fractionalQuantities = FRACTIONAL_QUANTITIES;
 
   constructor(
     private mealService: MealService,

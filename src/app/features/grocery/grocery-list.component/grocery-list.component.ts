@@ -5,6 +5,11 @@ import { GroceryListService } from '../grocery-list.service';
 import { QuantityFormatService } from '../../../core/utils/quantity-format.service';
 import { MealUtils } from '../../meals/meal-utils';
 import { generateId } from '../../../core/utils/id.utils';
+import {
+  INGREDIENT_UNITS,
+  FRACTIONAL_QUANTITIES,
+  FRACTIONAL_UNITS,
+} from '../../../core/constants/ingredient.constants';
 
 @Component({
   selector: 'app-grocery-list',
@@ -23,35 +28,9 @@ export class GroceryListComponent implements OnInit {
   editableList: GroceryList | null = null;
   errorMessage = '';
 
-  units = [
-    'g',
-    'kg',
-    'mL',
-    'L',
-    'tasse',
-    'cuillère à thé',
-    'cuillère à soupe',
-    'oz',
-    'lb',
-    'unité',
-  ];
-
-  fractionalUnits = ['tasse', 'cuillère à thé', 'cuillère à soupe'];
-
-  fractionalQuantities = [
-    '1/8',
-    '1/4',
-    '1/3',
-    '1/2',
-    '2/3',
-    '3/4',
-    '1',
-    '1 1/2',
-    '2',
-    '3',
-    '4',
-    '5',
-  ];
+  units = INGREDIENT_UNITS;
+  fractionalUnits = FRACTIONAL_UNITS;
+  fractionalQuantities = FRACTIONAL_QUANTITIES;
 
   constructor(
     private groceryListService: GroceryListService,

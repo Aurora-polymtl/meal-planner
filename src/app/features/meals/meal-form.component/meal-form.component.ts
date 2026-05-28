@@ -7,6 +7,11 @@ import { MealUtils } from '../meal-utils';
 import { Input } from '@angular/core';
 import { Category } from '../../../models/category';
 import { generateId } from '../../../core/utils/id.utils';
+import {
+  INGREDIENT_UNITS,
+  FRACTIONAL_QUANTITIES,
+  FRACTIONAL_UNITS,
+} from '../../../core/constants/ingredient.constants';
 
 @Component({
   selector: 'app-meal-form',
@@ -37,35 +42,9 @@ export class MealFormComponent {
 
   errors: MealErrors = {};
 
-  units = [
-    'g',
-    'kg',
-    'mL',
-    'L',
-    'tasse',
-    'cuillère à thé',
-    'cuillère à soupe',
-    'oz',
-    'lb',
-    'unité',
-  ];
-
-  fractionalUnits = ['tasse', 'cuillère à thé', 'cuillère à soupe'];
-
-  fractionalQuantities = [
-    '1/8',
-    '1/4',
-    '1/3',
-    '1/2',
-    '2/3',
-    '3/4',
-    '1',
-    '1 1/2',
-    '2',
-    '3',
-    '4',
-    '5',
-  ];
+  units = INGREDIENT_UNITS;
+  fractionalUnits = FRACTIONAL_UNITS;
+  fractionalQuantities = FRACTIONAL_QUANTITIES;
 
   isSaving = false;
 
