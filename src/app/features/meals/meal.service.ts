@@ -9,6 +9,7 @@ import {
 import { firestore } from '../../firebase/firebase.config';
 import { Meal } from '../../models/meal';
 import { AuthService } from '../auth/auth.service.ts';
+import { generateId } from '../../core/utils/id.utils';
 
 @Injectable({ providedIn: 'root' })
 export class MealService {
@@ -27,7 +28,7 @@ export class MealService {
 
     const mealWithId: Meal = {
       ...meal,
-      id: meal.id || crypto.randomUUID(),
+      id: meal.id || generateId(),
     };
 
     const mealRef = doc(firestore, `users/${user.uid}/meals/${mealWithId.id}`);

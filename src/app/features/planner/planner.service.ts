@@ -15,6 +15,7 @@ import {
 } from './menu-generator.service';
 import { AuthService } from '../auth/auth.service.ts';
 import { GroceryListService } from '../grocery/grocery-list.service';
+import { generateId } from '../../core/utils/id.utils';
 
 @Injectable({ providedIn: 'root' })
 export class PlannerService {
@@ -38,7 +39,7 @@ export class PlannerService {
 
     const planWithId: MealPlan = {
       ...plan,
-      id: plan.id || crypto.randomUUID(),
+      id: plan.id || generateId(),
     };
 
     const planRef = doc(firestore, `users/${user.uid}/mealPlans/${planWithId.id}`);
@@ -75,7 +76,7 @@ export class PlannerService {
     }
 
     return {
-      id: crypto.randomUUID(),
+      id: generateId(),
       startDate: options.startDate,
       days: this.menuGenerator.generateDays(options, meals, await this.getPlans()),
     };

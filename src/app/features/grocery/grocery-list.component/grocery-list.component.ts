@@ -4,6 +4,7 @@ import { GroceryIngredient, GroceryList } from '../../../models/grocery-list.mod
 import { GroceryListService } from '../grocery-list.service';
 import { QuantityFormatService } from '../../../core/utils/quantity-format.service';
 import { MealUtils } from '../../meals/meal-utils';
+import { generateId } from '../../../core/utils/id.utils';
 
 @Component({
   selector: 'app-grocery-list',
@@ -149,7 +150,7 @@ export class GroceryListComponent implements OnInit {
     if (!section) return;
 
     section.ingredients.push({
-      id: crypto.randomUUID(),
+      id: generateId(),
       name: '',
       quantity: 0,
       unit: 'unité',

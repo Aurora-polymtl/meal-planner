@@ -21,14 +21,18 @@
   background: var(--mat-sys-surface-container);
   color: var(--mat-sys-on-surface);
 
-  border-radius: 16px;
+  border-radius: 18px;
   overflow: hidden;
+}
+
+.drag-handle {
+  display: none;
 }
 
 .detail-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   gap: 16px;
 
   padding: 18px 20px 14px;
@@ -38,6 +42,7 @@
 .detail-header h2 {
   margin: 0;
   font-size: 24px;
+  line-height: 1.15;
 }
 
 .detail-header p {
@@ -48,7 +53,7 @@
 
 .detail-scroll {
   overflow-y: auto;
-  padding: 18px 20px;
+  padding: 20px;
 }
 
 .detail-section {
@@ -58,27 +63,36 @@
 }
 
 .detail-section + .detail-section {
-  margin-top: 22px;
+  margin-top: 26px;
 }
 
 .detail-section h3 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
   margin: 0;
-  font-size: 18px;
+  font-size: 20px;
+}
+
+.section-icon {
+  color: var(--mat-sys-primary);
+  font-size: 20px;
 }
 
 .readonly-value {
   margin: 0;
-  padding: 10px 12px;
-  border-radius: 12px;
+  padding: 14px 16px;
+  border-radius: 14px;
 
   background: rgba(0, 0, 0, 0.04);
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .chip-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 10px;
 }
 
 .chip {
@@ -86,7 +100,7 @@
   align-items: center;
   gap: 8px;
 
-  padding: 6px 8px 6px 12px;
+  padding: 8px 12px;
   border-radius: 999px;
 
   background: rgba(0, 0, 0, 0.08);
@@ -101,9 +115,6 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-
-  line-height: 1;
-  font-size: 14px;
 
   border: none;
   border-radius: 999px;
@@ -127,20 +138,42 @@
 }
 
 .ingredient-card {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
 
-  padding: 12px;
-  border-radius: 12px;
+  padding: 14px 16px;
+  border-radius: 16px;
 
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(0, 0, 0, 0.045);
 }
 
-.ingredient-card strong,
-.ingredient-card small {
+.ingredient-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  background: var(--mat-sys-primary);
+}
+
+.ingredient-info strong,
+.ingredient-info small {
   display: block;
+}
+
+.ingredient-info strong {
+  font-size: 16px;
+}
+
+.ingredient-info small {
+  margin-top: 4px;
+  opacity: 0.7;
+}
+
+.chevron {
+  font-size: 32px;
+  line-height: 1;
+  opacity: 0.85;
 }
 
 .ingredient-card button {
@@ -246,18 +279,32 @@ button {
   cursor: pointer;
 
   font-weight: 600;
+
+  transition:
+    opacity 0.2s,
+    transform 0.1s;
 }
 
 .primary-button,
-.secondary-button,
-.mode-button,
-.edit-row button {
+.secondary-button {
   background: var(--mat-sys-primary);
   color: var(--mat-sys-on-primary);
 }
 
 .mode-button {
-  min-width: 92px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  min-width: 120px;
+  border: 2px solid var(--mat-sys-primary);
+  background: transparent;
+  color: var(--mat-sys-primary);
+}
+
+.mode-icon {
+  font-size: 20px;
 }
 
 .edit-row button {
@@ -265,6 +312,9 @@ button {
   height: 44px;
   padding: 0;
   font-size: 18px;
+
+  background: var(--mat-sys-primary);
+  color: var(--mat-sys-on-primary);
 }
 
 .compact {
@@ -283,19 +333,104 @@ button:active {
   .detail-overlay {
     align-items: flex-end;
     padding: 0;
+    background: rgba(0, 0, 0, 0.45);
   }
 
   .detail-card {
     width: 100%;
-    max-height: 92vh;
+    max-height: 78dvh;
     border-radius: 16px 16px 0 0;
   }
 
-  .detail-header,
-  .detail-scroll,
-  .form-actions {
-    padding-left: 14px;
-    padding-right: 14px;
+  .drag-handle {
+    display: block;
+    width: 48px;
+    height: 5px;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.2);
+    margin: 10px auto 2px;
+  }
+
+  .detail-header {
+    padding: 12px 16px 14px;
+    gap: 12px;
+  }
+
+  .detail-header h2 {
+    font-size: 24px;
+  }
+
+  .detail-header p {
+    font-size: 14px;
+    line-height: 1.25;
+  }
+
+  .mode-button {
+    min-width: 118px;
+    min-height: 42px;
+    padding: 8px 12px;
+    border-radius: 12px;
+    font-size: 15px;
+  }
+
+  .mode-icon {
+    font-size: 17px;
+  }
+
+  .detail-scroll {
+    padding: 16px;
+  }
+
+  .detail-section + .detail-section {
+    margin-top: 22px;
+  }
+
+  .detail-section h3 {
+    font-size: 20px;
+    gap: 8px;
+  }
+
+  .section-icon {
+    font-size: 18px;
+  }
+
+  .readonly-value {
+    padding: 12px 14px;
+    border-radius: 14px;
+    font-size: 15px;
+  }
+
+  .chip {
+    font-size: 14px;
+    padding: 7px 11px;
+  }
+
+  .ingredients-list {
+    gap: 10px;
+  }
+
+  .ingredient-card {
+    min-height: auto;
+    padding: 12px 14px;
+    border-radius: 14px;
+    gap: 12px;
+  }
+
+  .ingredient-dot {
+    width: 8px;
+    height: 8px;
+  }
+
+  .ingredient-info strong {
+    font-size: 16px;
+  }
+
+  .ingredient-info small {
+    font-size: 14px;
+  }
+
+  .chevron {
+    font-size: 26px;
   }
 
   .quantity-unit-row,
@@ -303,12 +438,26 @@ button:active {
     grid-template-columns: 1fr;
   }
 
+  input,
+  select {
+    height: 42px;
+    font-size: 14px;
+  }
+
   .edit-row button,
-  .form-actions button {
+  .compact {
     width: 100%;
+    min-height: 42px;
   }
 
   .form-actions {
-    flex-direction: column;
+    padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+  }
+
+  .form-actions button {
+    width: 100%;
+    min-height: 44px;
+    border-radius: 12px;
+    font-size: 15px;
   }
 }

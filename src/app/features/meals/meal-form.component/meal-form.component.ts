@@ -6,6 +6,7 @@ import { Ingredient, Meal } from '../../../models/meal';
 import { MealUtils } from '../meal-utils';
 import { Input } from '@angular/core';
 import { Category } from '../../../models/category';
+import { generateId } from '../../../core/utils/id.utils';
 
 @Component({
   selector: 'app-meal-form',
@@ -143,7 +144,7 @@ export class MealFormComponent {
     if (this.errors.name || this.errors.category) return;
 
     const meal: Meal = {
-      id: crypto.randomUUID(),
+      id: generateId(),
       name: this.name.trim(),
       categories: this.categories,
       ingredients: this.ingredients,

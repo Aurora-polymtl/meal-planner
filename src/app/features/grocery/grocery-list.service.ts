@@ -9,6 +9,7 @@ import {
 } from '../../models/grocery-list.model';
 import { Meal } from '../../models/meal';
 import { MealPlan } from '../../models/meal-plan.model';
+import { generateId } from '../../core/utils/id.utils';
 
 @Injectable({ providedIn: 'root' })
 export class GroceryListService {
@@ -72,13 +73,13 @@ export class GroceryListService {
 
   private createSection(date: string, slot: 'dinner' | 'supper', meal: Meal): GroceryMealSection {
     return {
-      id: crypto.randomUUID(),
+      id: generateId(),
       date,
       slot,
       mealId: meal.id,
       mealName: meal.name,
       ingredients: (meal.ingredients ?? []).map((ingredient) => ({
-        id: crypto.randomUUID(),
+        id: generateId(),
         name: ingredient.name,
         quantity: ingredient.quantity,
         unit: ingredient.unit,
