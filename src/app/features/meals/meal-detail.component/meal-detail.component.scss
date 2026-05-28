@@ -329,6 +329,14 @@ button:active {
   transform: scale(0.98);
 }
 
+.detail-header > div {
+  min-width: 0;
+}
+
+.detail-header h2 {
+  overflow-wrap: anywhere;
+}
+
 @media (max-width: 700px) {
   .detail-overlay {
     align-items: flex-end;
@@ -460,4 +468,17 @@ button:active {
     border-radius: 12px;
     font-size: 15px;
   }
+
+  .detail-header {
+  align-items: flex-start;
+}
+
+.detail-header h2 {
+  font-size: 22px;
+  line-height: 1.1;
+}
+
+.field-group input {
+  min-width: 0;
+}
 }

@@ -57,6 +57,14 @@ export class MealDetailComponent {
   }
 
   async save() {
+    const cleanName = this.meal.name.trim();
+
+    if (!cleanName) {
+      return;
+    }
+
+    this.meal.name = cleanName;
+
     await this.mealService.update(this.meal);
     this.updated.emit();
     this.editMode = false;

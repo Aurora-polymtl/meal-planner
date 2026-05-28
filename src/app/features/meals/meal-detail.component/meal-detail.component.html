@@ -17,6 +17,16 @@
     </header>
 
     <div class="detail-scroll">
+      @if (editMode) {
+        <section class="detail-section">
+          <h3><span class="section-icon">✎</span>Nom du plat</h3>
+
+          <div class="field-group">
+            <label for="meal-name">Nom</label>
+            <input id="meal-name" [(ngModel)]="meal.name" placeholder="Ex. Tacos" />
+          </div>
+        </section>
+      }
       <section class="detail-section">
         <h3><span class="section-icon">🍴</span>Utilisation</h3>
 
